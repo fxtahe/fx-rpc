@@ -1,0 +1,6 @@
+io\fxtahe\rpc\common\exception\SerializeException.class
+io\fxtahe\rpc\common\serialize\HessianSerialization.class
+io\fxtahe\rpc\common\serialize\Serialization.class
+io\fxtahe\rpc\common\core\RpcResponse.class
+io\fxtahe\rpc\common\core\RpcRequest.class
+io\fxtahe\rpc\common\util\ClassUtil.class
