@@ -11,6 +11,7 @@
     <modules>
         <module>fx-common</module>
         <module>fx-bom</module>
+        <module>fx-registry</module>
     </modules>
 
     <properties>
