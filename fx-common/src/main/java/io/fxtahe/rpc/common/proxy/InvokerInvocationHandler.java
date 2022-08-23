@@ -7,8 +7,8 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 
 /**
- * @author XE-墨菲特(魏子阳)
- * @since 2022/8/19 15:25
+ * @author fxtahe
+ * @since 2022/8/23 13:55
  */
 public class InvokerInvocationHandler implements InvocationHandler {
 

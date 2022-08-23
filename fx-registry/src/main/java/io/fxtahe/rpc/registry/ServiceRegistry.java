@@ -6,7 +6,7 @@ import java.util.List;
  * @author fxtahe
  * @since 2022-08-20 16:30
  */
-public interface Registry<S extends ServiceInstance,C extends Subscriber> {
+public interface ServiceRegistry<S extends ServiceInstance,C extends Subscriber> {
 
     void register(S registration);
 

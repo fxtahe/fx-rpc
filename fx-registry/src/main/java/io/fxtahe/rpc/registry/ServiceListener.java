@@ -1,5 +1,7 @@
 package io.fxtahe.rpc.registry;
 
+import java.util.List;
+
 /**
  * 服务状态监听
  * @author fxtahe
@@ -9,6 +11,6 @@ package io.fxtahe.rpc.registry;
 public interface ServiceListener {
 
 
-    void onStateChange(String serviceId,ServiceState newState);
+    void onStateChange(String serviceId, List<ServiceInstance> serviceInstances, ServiceChangeState newState);
 
 }
