@@ -11,6 +11,7 @@ public enum ServiceChangeState {
      * service connect to registry state
      */
     CONNECTED,
+
     /**
      * service disconnect from registry state
      */

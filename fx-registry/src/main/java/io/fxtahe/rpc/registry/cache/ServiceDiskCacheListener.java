@@ -1,4 +1,8 @@
-package io.fxtahe.rpc.registry;
+package io.fxtahe.rpc.registry.cache;
+
+import io.fxtahe.rpc.registry.ServiceChangeState;
+import io.fxtahe.rpc.registry.ServiceInstance;
+import io.fxtahe.rpc.registry.ServiceListener;
 
 import java.util.List;
 
@@ -10,9 +14,11 @@ import java.util.List;
 public class ServiceDiskCacheListener implements ServiceListener {
 
 
+    private ServiceInfoCache serviceInfoCache;
 
     @Override
     public void onStateChange(String serviceId, List<ServiceInstance> serviceInstances, ServiceChangeState newState) {
         //TODO refresh cache
+        serviceInfoCache.refreshInstances(serviceId,serviceInstances);
     }
 }

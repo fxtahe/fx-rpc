@@ -1,5 +1,6 @@
 package io.fxtahe.rpc.registry;
 
+
 import java.util.List;
 
 /**
@@ -7,34 +8,28 @@ import java.util.List;
  * @author fxtahe
  * @since 2022/8/23 18:01
  */
-public class ServiceRegistryCacheDecorator implements ServiceRegistry<ServiceInstance,Subscriber> {
-
-    private ServiceRegistry<ServiceInstance,Subscriber> registry;
-
-    private ServiceDiscovery serviceDiscovery;
-
-    private String cacheDir;
+public class ServiceRegistryWrapper implements ServiceRegistry {
 
 
+    private ServiceRegistry registry;
 
 
+    public ServiceRegistryWrapper(ServiceRegistry registry) {
+        this.registry = registry;
+    }
 
     @Override
     public void register(ServiceInstance registration) {
-        //进行cache缓存
         this.registry.register(registration);
-
     }
 
     @Override
     public void unregister(ServiceInstance registration) {
-        //清理
         this.registry.unregister(registration);
     }
 
     @Override
     public List<ServiceInstance> subscribe(Subscriber subscriber) {
-        
         return this.registry.subscribe(subscriber);
     }
 
@@ -42,4 +37,15 @@ public class ServiceRegistryCacheDecorator implements ServiceRegistry<ServiceIns
     public void unsubscribe(Subscriber subscriber) {
         this.registry.unsubscribe(subscriber);
     }
+
+    @Override
+    public List<ServiceInstance> getInstances(String serviceId) {
+        return registry.getInstances(serviceId);
+    }
+
+    @Override
+    public List<String> getInstances() {
+        return registry.getInstances();
+    }
+
 }

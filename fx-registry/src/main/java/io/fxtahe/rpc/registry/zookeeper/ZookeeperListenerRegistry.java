@@ -11,13 +11,14 @@ import org.apache.curator.x.discovery.ServiceCache;
 import org.apache.curator.x.discovery.ServiceDiscovery;
 import org.apache.curator.x.discovery.ServiceInstance;
 import org.apache.curator.x.discovery.details.ServiceCacheListener;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
-import static org.apache.logging.log4j.ThreadContext.isEmpty;
 
 /**
  * @author fxtahe
@@ -25,21 +26,23 @@ import static org.apache.logging.log4j.ThreadContext.isEmpty;
  */
 public class ZookeeperListenerRegistry implements Closeable{
 
+    private static final Logger log = LoggerFactory.getLogger(ZookeeperListenerRegistry.class);
+
     /**
      * key:serviceId
      * value:zookeeper service cache listener
      */
     private final Map<String,ZookeeperListener> cache = new ConcurrentHashMap<>();
 
-    private ServiceDiscovery<ZookeeperServiceInstance> serviceDiscovery;
+    private ServiceDiscovery<io.fxtahe.rpc.registry.ServiceInstance> serviceDiscovery;
 
-    public ZookeeperListenerRegistry(ServiceDiscovery<ZookeeperServiceInstance> serviceDiscovery) {
+    public ZookeeperListenerRegistry(ServiceDiscovery<io.fxtahe.rpc.registry.ServiceInstance> serviceDiscovery) {
         this.serviceDiscovery = serviceDiscovery;
     }
 
     public void registerServiceListener(String serviceId, ServiceListener serviceListener){
         ZookeeperListener zookeeperListener = cache.computeIfAbsent(serviceId,
-                key->new ZookeeperListener(Lists.newArrayList(serviceListener),serviceDiscovery.serviceCacheBuilder().name(key).build(),key));
+                key->new ZookeeperListener(Lists.newArrayList(),serviceDiscovery.serviceCacheBuilder().name(key).build(),key));
         zookeeperListener.addListener(serviceListener);
     }
 
@@ -65,16 +68,17 @@ public class ZookeeperListenerRegistry implements Closeable{
 
         private List<ServiceListener> listeners;
 
-        private ServiceCache<ZookeeperServiceInstance> serviceCache;
+        private ServiceCache<io.fxtahe.rpc.registry.ServiceInstance> serviceCache;
 
         private String serviceId;
 
 
-        public ZookeeperListener(List<ServiceListener> listeners, ServiceCache<ZookeeperServiceInstance> serviceCache, String serviceId) {
+        public ZookeeperListener(List<ServiceListener> listeners, ServiceCache<io.fxtahe.rpc.registry.ServiceInstance> serviceCache, String serviceId) {
             this.listeners = listeners;
             this.serviceCache = serviceCache;
             this.serviceId = serviceId;
             try {
+                serviceCache.addListener(this);
                 serviceCache.start();
             } catch (Exception e) {
                 throw new RegisterException("register "+serviceId+" listener fail");
@@ -83,7 +87,8 @@ public class ZookeeperListenerRegistry implements Closeable{
 
         @Override
         public void cacheChanged() {
-            List<ServiceInstance<ZookeeperServiceInstance>> zookeeperServiceInstances = this.serviceCache.getInstances();
+            log.info("{} change",serviceId);
+            List<ServiceInstance<io.fxtahe.rpc.registry.ServiceInstance>> zookeeperServiceInstances = this.serviceCache.getInstances();
             List<io.fxtahe.rpc.registry.ServiceInstance> instances = zookeeperServiceInstances.stream().map(ServiceInstance::getPayload).collect(Collectors.toList());
             ServiceChangeState state = zookeeperServiceInstances.isEmpty()
                     ? ServiceChangeState.DISCONNECTED : ServiceChangeState.CONNECTED;

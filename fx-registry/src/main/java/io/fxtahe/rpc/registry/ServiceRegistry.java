@@ -6,25 +6,44 @@ import java.util.List;
  * @author fxtahe
  * @since 2022-08-20 16:30
  */
-public interface ServiceRegistry<S extends ServiceInstance,C extends Subscriber> {
+public interface ServiceRegistry{
 
-    void register(S registration);
+    /**
+     * get ServiceInstance collection by serviceId
+     * @param serviceId service identifier
+     * @return collection of ServiceInstance
+     */
+    List<ServiceInstance> getInstances(String serviceId);
+
+    /**
+     * get all serviceId
+     * @return collection of serviceId
+     */
+    List<String> getInstances();
+
+    /**
+     * register service
+     * @param registration
+     */
+    void register(ServiceInstance registration);
 
     /**
      * unregister service
      * @param registration service registration
      */
-    void unregister(S registration);
+    void unregister(ServiceInstance registration);
 
     /**
      * subscribe service
      * @return service instance collection
      */
-    List<S> subscribe(C subscriber);
+    List<ServiceInstance> subscribe(Subscriber subscriber);
 
     /**
      * unsubscribe service
      */
-    void unsubscribe(C subscriber);
+    void unsubscribe(Subscriber subscriber);
+
+
 
 }

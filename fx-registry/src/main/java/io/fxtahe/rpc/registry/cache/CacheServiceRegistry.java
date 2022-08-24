@@ -1,9 +1,8 @@
-package io.fxtahe.rpc.registry.local;
+package io.fxtahe.rpc.registry.cache;
 
+import com.google.common.collect.Lists;
 import io.fxtahe.rpc.registry.ServiceRegistry;
-import io.fxtahe.rpc.registry.ServiceChangeState;
 import io.fxtahe.rpc.registry.ServiceInstance;
-import io.fxtahe.rpc.registry.ServiceListener;
 import io.fxtahe.rpc.registry.Subscriber;
 
 import java.util.ArrayList;
@@ -16,36 +15,52 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author fxtahe
  * @since 2022/8/23 10:25
  */
-public class LocalCacheServiceRegistry implements ServiceRegistry<ServiceInstance,Subscriber> {
+public class CacheServiceRegistry implements ServiceRegistry{
 
-    private final Map<String, List<ServiceInstance>> serviceInstances = new ConcurrentHashMap<>();
+    private final Map<String, List<ServiceInstance>> registerInstances = new ConcurrentHashMap<>();
 
     private final Map<String,List<Subscriber>> subscribers = new ConcurrentHashMap<>();
 
+    private final Map<String,List<ServiceInstance>> remoteInstances = new ConcurrentHashMap<>();
+
+    private ServiceRegistry registry;
+
+    public CacheServiceRegistry(ServiceRegistry registry) {
+        this.registry = registry;
+    }
+
+    @Override
+    public List<ServiceInstance> getInstances(String serviceId) {
+        return remoteInstances.get(serviceId);
+    }
+
+    @Override
+    public List<String> getInstances() {
+        return Lists.newArrayList(registerInstances.keySet());
+    }
+
     @Override
     public void register(ServiceInstance registration) {
-        List<ServiceInstance> serviceInstances = this.serviceInstances.computeIfAbsent(registration.getServiceId(), key -> new ArrayList<>());
+        List<ServiceInstance> serviceInstances = this.registerInstances.computeIfAbsent(registration.getServiceId(), key -> new ArrayList<>());
         serviceInstances.add(registration);
-        notifyChange(registration,ServiceChangeState.CONNECTED);
     }
 
     @Override
     public void unregister(ServiceInstance registration) {
-        List<ServiceInstance> serviceInstances = this.serviceInstances.get(registration.getServiceId());
+        List<ServiceInstance> serviceInstances = this.registerInstances.get(registration.getServiceId());
         if(serviceInstances!=null && serviceInstances.size()>0){
             serviceInstances.remove(registration);
             if(serviceInstances.size()==0){
-                this.serviceInstances.remove(registration.getServiceId());
+                this.registerInstances.remove(registration.getServiceId());
             }
         }
-        notifyChange(registration,ServiceChangeState.DISCONNECTED);
     }
 
     @Override
     public List<ServiceInstance> subscribe(Subscriber subscriber) {
         List<Subscriber> subscribers = this.subscribers.computeIfAbsent(subscriber.getServiceId(), key -> new ArrayList<>());
         subscribers.add(subscriber);
-        return this.serviceInstances.get(subscriber.getServiceId());
+        return this.registerInstances.get(subscriber.getServiceId());
     }
 
     @Override
@@ -60,11 +75,6 @@ public class LocalCacheServiceRegistry implements ServiceRegistry<ServiceInstanc
     }
 
 
-    public void notifyChange(ServiceInstance serviceInstance, ServiceChangeState state){
-        String serviceId = serviceInstance.getServiceId();
-        for(Subscriber subscriber:subscribers.get(serviceId)){
-            ServiceListener serviceListener = subscriber.getServiceListener();
-            serviceListener.onStateChange(serviceId,state);
-        }
-    }
+
+
 }

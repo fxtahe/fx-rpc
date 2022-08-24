@@ -7,14 +7,14 @@ import java.util.List;
  * @author fxtahe
  * @since 2022-08-23 22:32
  */
-public interface ServiceDiscovery<S extends ServiceInstance> {
+public interface ServiceDiscovery {
 
     /**
      * get ServiceInstance collection by serviceId
      * @param serviceId service identifier
      * @return collection of ServiceInstance
      */
-    List<S> getInstances(String serviceId);
+    List<ServiceInstance> getInstances(String serviceId);
 
     /**
      * get all serviceId
