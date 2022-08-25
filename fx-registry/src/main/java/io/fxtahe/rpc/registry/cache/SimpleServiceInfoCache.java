@@ -1,11 +1,17 @@
 package io.fxtahe.rpc.registry.cache;
 
+import io.fxtahe.rpc.common.util.FileUtil;
+import io.fxtahe.rpc.common.util.JsonUtil;
 import io.fxtahe.rpc.registry.ServiceInstance;
-import io.fxtahe.rpc.registry.Subscriber;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.*;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author fxtahe
@@ -13,40 +19,63 @@ import java.util.concurrent.*;
  */
 public class SimpleServiceInfoCache implements ServiceInfoCache {
 
-    private final Map<String, List<ServiceInstance>> registerInstances = new ConcurrentHashMap<>();
+    private final Map<String, List<ServiceInstance>> instances = new ConcurrentHashMap<>();
 
-    private final Map<String, List<Subscriber>> subscribers = new ConcurrentHashMap<>();
-
-    private final Map<String, List<ServiceInstance>> remoteInstances = new ConcurrentHashMap<>();
-
-    private Semaphore semaphore = new Semaphore(1);
-
-    private final ScheduledExecutorService executor = new ScheduledThreadPoolExecutor(1, r -> {
-        Thread thread = new Thread("refresh service info thread");
+    private final ExecutorService refreshThreadPool = new ThreadPoolExecutor(10, 20, 2000, TimeUnit.MILLISECONDS, new ArrayBlockingQueue<>(20), runnable -> {
+        Thread thread = new Thread(runnable,"refresh service info thread");
         thread.setDaemon(true);
         return thread;
     });
 
+
     @Override
     public void shutdown() throws Exception {
-        registerInstances.clear();
-        subscribers.clear();
-        registerInstances.clear();
+        refreshThreadPool.shutdown();
+        if(refreshThreadPool.awaitTermination(2000,TimeUnit.MILLISECONDS)){
+            refreshThreadPool.shutdownNow();
+        }
     }
 
 
     @Override
     public void refreshInstances(String serviceId, List<ServiceInstance> instances) {
-        registerInstances.put(serviceId, instances);
+        this.instances.put(serviceId, instances);
+        RefreshDiskRunnable refreshRunnable = new RefreshDiskRunnable(serviceId, instances);
+        refreshThreadPool.execute(refreshRunnable);
     }
 
 
-    private class RefreshRunnable implements Runnable {
+    @Override
+    public List<ServiceInstance> getInstances(String serviceId) {
+        return instances.get(serviceId);
+    }
 
+
+    private class RefreshDiskRunnable implements Runnable {
+
+        private final String serviceId;
+
+        private final List<ServiceInstance> serviceInstances;
+
+        private final String diskDirPath = System.getProperty("user.home") + "/fx-registry/";
+
+        public RefreshDiskRunnable(String serviceId, List<ServiceInstance> serviceInstances) {
+            this.serviceId = serviceId;
+            this.serviceInstances = serviceInstances;
+        }
 
         @Override
         public void run() {
-
+            String content="";
+            String path = diskDirPath+serviceId+".cache";
+            if(serviceInstances !=null && !serviceInstances.isEmpty()){
+                content = JsonUtil.writeJson(serviceInstances);
+            }
+            try {
+                FileUtil.writeConcurrentFileContent(content,path,"UTF-8");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 }

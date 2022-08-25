@@ -24,14 +24,21 @@ public class ZookeeperRegistryTest {
                 connectString("127.0.0.1:2181")
                 .retryPolicy(new ExponentialBackoffRetry(1000, 3, 200))
                 .build();
+        curatorFramework.getConnectionStateListenable().addListener((client, newState) -> {
+                    if (newState == ConnectionState.RECONNECTED) {
+                        System.out.println("重连成功！");
+                    }
+                }
+        );
 
+        // start()开始连接，没有此会报错
         curatorFramework.start();
+        // 阻塞直到连接成功
+        curatorFramework.blockUntilConnected();
         ServiceDiscovery serviceDiscovery = ServiceDiscoveryBuilder.builder(ServiceMeta.class)
                 .client(curatorFramework)
                 .basePath("/fx-rpc")
                 .build();
-
-
 
         ServiceInstance build = ServiceInstance.builder()
                 .serviceType(ServiceType.DYNAMIC).address("127.0.0.1").id("1")
@@ -39,7 +46,6 @@ public class ZookeeperRegistryTest {
 
 
         ServiceCache cache = serviceDiscovery.serviceCacheBuilder().name("io.fxtahe.rpc.common.filter.Filter").build();
-        cache.start();
         cache.addListener(new ServiceCacheListener() {
             @Override
             public void cacheChanged() {
@@ -54,6 +60,9 @@ public class ZookeeperRegistryTest {
             }
         });
 
+        cache.start();
+
+
         serviceDiscovery.registerService(build);
         ServiceInstance build1 = ServiceInstance.builder()
                 .serviceType(ServiceType.DYNAMIC).address("127.0.0.1").id("2")
@@ -63,8 +72,6 @@ public class ZookeeperRegistryTest {
         serviceDiscovery.unregisterService(build);
         CountDownLatch countDownLatch = new CountDownLatch(1);
         countDownLatch.await();
-
-
 
     }
 

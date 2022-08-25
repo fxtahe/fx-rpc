@@ -39,6 +39,15 @@ public class Subscriber {
         this.serviceListener = serviceListener;
     }
 
+    public Subscriber() {
+    }
+
+    public Subscriber(String serviceId, String address, ServiceListener serviceListener) {
+        this.serviceId = serviceId;
+        this.address = address;
+        this.serviceListener = serviceListener;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

@@ -13,12 +13,14 @@ import java.util.List;
  */
 public class ServiceDiskCacheListener implements ServiceListener {
 
-
     private ServiceInfoCache serviceInfoCache;
+
+    public ServiceDiskCacheListener(ServiceInfoCache serviceInfoCache) {
+        this.serviceInfoCache = serviceInfoCache;
+    }
 
     @Override
     public void onStateChange(String serviceId, List<ServiceInstance> serviceInstances, ServiceChangeState newState) {
-        //TODO refresh cache
         serviceInfoCache.refreshInstances(serviceId,serviceInstances);
     }
 }

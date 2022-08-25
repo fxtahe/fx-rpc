@@ -35,9 +35,8 @@ public interface ServiceRegistry{
 
     /**
      * subscribe service
-     * @return service instance collection
      */
-    List<ServiceInstance> subscribe(Subscriber subscriber);
+    void subscribe(Subscriber subscriber);
 
     /**
      * unsubscribe service

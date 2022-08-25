@@ -12,6 +12,7 @@
         <module>fx-common</module>
         <module>fx-bom</module>
         <module>fx-registry</module>
+        <module>fx-netty</module>
     </modules>
 
     <properties>

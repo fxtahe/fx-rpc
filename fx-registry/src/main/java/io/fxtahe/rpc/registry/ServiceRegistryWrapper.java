@@ -29,8 +29,8 @@ public class ServiceRegistryWrapper implements ServiceRegistry {
     }
 
     @Override
-    public List<ServiceInstance> subscribe(Subscriber subscriber) {
-        return this.registry.subscribe(subscriber);
+    public void subscribe(Subscriber subscriber) {
+        this.registry.subscribe(subscriber);
     }
 
     @Override

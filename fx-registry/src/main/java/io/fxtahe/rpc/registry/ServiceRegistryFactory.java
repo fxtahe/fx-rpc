@@ -5,6 +5,7 @@ import io.fxtahe.rpc.registry.cache.CacheServiceRegistry;
 import io.fxtahe.rpc.registry.zookeeper.ZookeeperServiceRegistry;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
+import org.apache.curator.framework.state.ConnectionState;
 import org.apache.curator.retry.ExponentialBackoffRetry;
 
 import java.util.concurrent.CountDownLatch;
@@ -30,17 +31,23 @@ public class ServiceRegistryFactory {
                         .sessionTimeoutMs(readTimeout)
                         .retryPolicy(new ExponentialBackoffRetry(1000, 10, 200))
                         .build();
-                // start()开始连接，没有此会报错
                 curatorFramework.start();
-                // 阻塞直到连接成功
-                curatorFramework.blockUntilConnected(1000, TimeUnit.MILLISECONDS);
+                if(!curatorFramework.blockUntilConnected(2000, TimeUnit.MILLISECONDS)){
+                    throw new RegisterException("zookeeper client start fail.");
+                }
                 ServiceRegistry serviceRegistry = new ZookeeperServiceRegistry(curatorFramework);
                 if(registryConfig.isUseCache()){
-                    serviceRegistry = new CacheServiceRegistry(serviceRegistry);
+                    CacheServiceRegistry cacheServiceRegistry = new CacheServiceRegistry(serviceRegistry);
+                    curatorFramework.getConnectionStateListenable().addListener((client, newState) -> {
+                        if (newState == ConnectionState.RECONNECTED) {
+                            cacheServiceRegistry.recoverRegisters();
+                        }
+                    });
+                    return cacheServiceRegistry;
                 }
                 return serviceRegistry;
             default:
-                return null;
+                throw new RegisterException("registry not found");
         }
     }
 
@@ -50,11 +57,15 @@ public class ServiceRegistryFactory {
         registryConfig.setConnectTimeout(60000);
         registryConfig.setReadTimeout(60000);
         registryConfig.setRegistryType("zookeeper");
-        registryConfig.setUseCache(false);
-        ServiceRegistry serviceRegistry = buildRegistry(registryConfig);
+        registryConfig.setUseCache(true);
+        ServiceRegistry serviceRegistry = null;
+        try {
+            serviceRegistry = buildRegistry(registryConfig);
+        } catch (InterruptedException exception) {
+            exception.printStackTrace();
+        }
         Subscriber subscriber = new Subscriber();
         subscriber.setServiceId("io.fxtahe.rpc.common.filter.Filter");
-        subscriber.setServiceListener((serviceId, serviceInstances, newState) -> System.out.println(serviceId+":"+newState));
         serviceRegistry.subscribe(subscriber);
 
         ServiceInstance serviceInstance = new ServiceInstance();

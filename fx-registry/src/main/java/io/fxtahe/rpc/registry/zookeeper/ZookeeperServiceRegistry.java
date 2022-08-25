@@ -34,11 +34,6 @@ public class ZookeeperServiceRegistry implements ServiceRegistry {
         if(curatorFramework.getState()!=CuratorFrameworkState.STARTED){
             throw new IllegalStateException("zookeeper client state illegal ");
         }
-        curatorFramework.getConnectionStateListenable().addListener((client, newState) -> {
-            if (newState == ConnectionState.RECONNECTED) {
-                //TODO recover data . such as  register service, subscribe
-            }
-        });
         this.serviceDiscovery = ServiceDiscoveryBuilder.builder(io.fxtahe.rpc.registry.ServiceInstance.class)
                 .client(curatorFramework)
                 .basePath(basePath)
@@ -65,11 +60,10 @@ public class ZookeeperServiceRegistry implements ServiceRegistry {
     }
 
     @Override
-    public List<io.fxtahe.rpc.registry.ServiceInstance> subscribe(Subscriber subscriber) {
+    public void subscribe(Subscriber subscriber) {
         String serviceId = subscriber.getServiceId();
         ServiceListener serviceListener = subscriber.getServiceListener();
         zookeeperListenerRegistry.registerServiceListener(serviceId,serviceListener);
-        return getInstances(serviceId);
     }
 
     @Override

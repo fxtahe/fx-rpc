@@ -17,6 +17,7 @@ public interface ServiceInfoCache extends Closeable {
     void refreshInstances(String serviceId, List<ServiceInstance> instances);
 
 
+    List<ServiceInstance> getInstances(String serviceId);
 
 
 
