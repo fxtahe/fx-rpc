@@ -9,7 +9,7 @@ import io.fxtahe.rpc.common.util.JsonUtil;
  * @since 2022/8/23 10:05
  */
 @Extension(alias = "json")
-public class JsonSerialization implements Serialization{
+public class JsonSerialization implements Serialization {
 
     @Override
     public byte[] serialize(Object obj) throws SerializeException {

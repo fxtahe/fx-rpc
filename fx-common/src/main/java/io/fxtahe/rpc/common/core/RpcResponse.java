@@ -1,6 +1,7 @@
 package io.fxtahe.rpc.common.core;
 
 import io.fxtahe.rpc.common.costants.StatusConstants;
+import io.fxtahe.rpc.common.util.IdGenerator;
 
 /**
  * @author fxtahe
@@ -18,30 +19,9 @@ public class RpcResponse {
 
     private String errorMsg;
 
-
-    public static RpcResponse builder(){
-        return new RpcResponse();
+    public RpcResponse() {
+        this.id = IdGenerator.generateId();
     }
-
-    public void id(long id){
-        setId(id);
-    }
-    public void data(Object data){
-        setData(data);
-    }
-    public void status(byte statusConstants){
-        setStatus(statusConstants);
-    }
-    public void heartBeat(boolean heartBeat){
-        setHeartBeat(heartBeat);
-    }
-    public void errorMsg(String errorMsg){
-        setErrorMsg(errorMsg);
-    }
-    public RpcResponse build(){
-        return this;
-    }
-
 
     public long getId() {
         return id;

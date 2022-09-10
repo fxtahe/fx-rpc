@@ -1,7 +1,9 @@
 package io.fxtahe.rpc.common.filter;
 
 import io.fxtahe.rpc.common.core.Invocation;
+import io.fxtahe.rpc.common.core.Result;
 import io.fxtahe.rpc.common.ext.annotation.Extension;
+import io.fxtahe.rpc.common.invoke.Invoker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -10,15 +12,14 @@ import org.slf4j.LoggerFactory;
  * @since 2022/8/19 10:45
  */
 @Extension(alias = "log",order = 0,singleton = true)
-public class LogFilter implements Filter{
+public class LogFilter implements Filter {
 
     private static final Logger log = LoggerFactory.getLogger(LogFilter.class);
 
     @Override
-    public void filter(Invocation invocation) {
+    public Result filter(Invoker invoker, Invocation invocation) {
 
 
-
-
+        return null;
     }
 }

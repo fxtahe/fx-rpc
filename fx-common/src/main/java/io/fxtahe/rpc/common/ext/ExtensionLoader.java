@@ -1,7 +1,6 @@
 package io.fxtahe.rpc.common.ext;
 
 import com.google.common.collect.Lists;
-import io.fxtahe.rpc.common.ext.ExtensionClass;
 import io.fxtahe.rpc.common.ext.annotation.Extension;
 import io.fxtahe.rpc.common.util.ClassUtil;
 
@@ -52,6 +51,10 @@ public class ExtensionLoader<T> {
         return cache.values().stream().sorted(Comparator.comparing(ExtensionClass::getOrder)).map(ExtensionClass::getInstance).collect(Collectors.toList());
     }
 
+    public List<T> getExtensionsGroup(String group){
+        return cache.values().stream().filter(el->el.getGroup().equals(group)).sorted(Comparator.comparing(ExtensionClass::getOrder)).map(ExtensionClass::getInstance).collect(Collectors.toList());
+    }
+
 
     private Map<String, ExtensionClass<T>> loadExtensions(Class<T> clazz) {
         ClassLoader classLoader = ClassUtil.getClassLoader(clazz);
@@ -81,7 +84,8 @@ public class ExtensionLoader<T> {
                                 }
                                 boolean singleton = annotation.singleton();
                                 int order = annotation.order();
-                                ExtensionClass<T> extensionClass = new ExtensionClass<T>(alias, order, aClass, singleton);
+                                String group = annotation.group();
+                                ExtensionClass<T> extensionClass = new ExtensionClass<T>(alias, order, aClass, singleton,group);
                                 extensionClasses.put(alias, extensionClass);
                             }
                         }

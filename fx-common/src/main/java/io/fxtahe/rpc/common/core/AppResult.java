@@ -1,14 +1,12 @@
 package io.fxtahe.rpc.common.core;
 
-import java.util.function.BiConsumer;
-
 /**
  *
  * 真实返回业务结果
  * @author fxtahe
  * @since 2022/8/19 14:19
  */
-public class RpcResult implements Result{
+public class AppResult implements Result{
 
     private Object value;
 
@@ -37,10 +35,5 @@ public class RpcResult implements Result{
     @Override
     public void setException(Throwable t) {
         this.throwable = t;
-    }
-
-    @Override
-    public Result whenComplete(BiConsumer<Result, Throwable> fn) {
-        return null;
     }
 }

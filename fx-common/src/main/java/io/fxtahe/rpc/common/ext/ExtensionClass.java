@@ -20,11 +20,14 @@ public class ExtensionClass<T> {
 
     private T instance;
 
-    public ExtensionClass(String name, int order, Class<T> instanceClass, boolean singleton) {
+    private String group;
+
+    public ExtensionClass(String name, int order, Class<T> instanceClass, boolean singleton,String group) {
         this.name = name;
         this.order = order;
         this.instanceClass = instanceClass;
         this.singleton = singleton;
+        this.group = group;
     }
 
     public Class<T> getInstanceClass() {
@@ -97,5 +100,14 @@ public class ExtensionClass<T> {
 
     public void setInstance(T instance) {
         this.instance = instance;
+    }
+
+
+    public String getGroup() {
+        return group;
+    }
+
+    public void setGroup(String group) {
+        this.group = group;
     }
 }

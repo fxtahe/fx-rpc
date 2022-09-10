@@ -26,6 +26,6 @@ public interface Serialization {
      * @return
      * @throws SerializeException
      */
-    <T> T deserialize(byte[] bytes,Class<T> tClass) throws SerializeException;
+    <T> T deserialize(byte[] bytes, Class<T> tClass) throws SerializeException;
 
 }

@@ -1,0 +1,107 @@
+package io.fxtahe.rpc.remoing.netty;
+
+import io.fxtahe.rpc.common.remoting.Client;
+import io.fxtahe.rpc.common.remoting.ConnectionHandler;
+import io.netty.bootstrap.Bootstrap;
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelInitializer;
+import io.netty.channel.ChannelOption;
+import io.netty.channel.EventLoopGroup;
+import io.netty.channel.socket.SocketChannel;
+import io.netty.handler.timeout.IdleStateHandler;
+
+import java.net.InetSocketAddress;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
+/**
+ * @author fxtahe
+ * @since 2022/9/6 9:07
+ */
+public class NettyClient implements Client {
+
+    private Bootstrap bootstrap;
+
+    private EventLoopGroup eventLoopGroup;
+
+    private InetSocketAddress remoteAddress;
+
+    private Channel channel;
+
+    private final Lock connectLock = new ReentrantLock();
+
+    public NettyClient(InetSocketAddress remoteAddress, ConnectionHandler connectionHandler) {
+        this.remoteAddress = remoteAddress;
+        eventLoopGroup = NettyEventLoopFactory.buildEventLoopGroup(Runtime.getRuntime().availableProcessors());
+        bootstrap = new Bootstrap().group(eventLoopGroup)
+                .channel(NettyEventLoopFactory.socketChannelClass())
+                .option(ChannelOption.SO_KEEPALIVE,true)
+                .handler(new ChannelInitializer<SocketChannel>() {
+                    @Override
+                    protected void initChannel(SocketChannel ch) throws Exception {
+                        ch.pipeline()
+                                .addLast("client-idle-handler",new IdleStateHandler(60000,0,0, TimeUnit.MILLISECONDS))
+                                .addLast("cilent-handler",new NettyClientHandler(connectionHandler));
+                    }
+                });
+        Runtime.getRuntime().addShutdownHook(new Thread(()->{
+            eventLoopGroup.shutdownGracefully();
+        }));
+    }
+
+    @Override
+    public void connect() {
+        connectLock.lock();
+        try{
+            ChannelFuture channelFuture = bootstrap.connect().syncUninterruptibly();
+            Channel newChannel = channelFuture.channel();
+            if(this.channel !=null){
+                this.channel.close().syncUninterruptibly();
+                NettyConnectionManager.removeIfDisconnected(this.channel);
+            }
+            this.channel = newChannel;
+        }finally {
+            connectLock.unlock();
+        }
+    }
+
+    @Override
+    public void reConnect() {
+        connectLock.lock();
+        try{
+            disConnect();
+            connect();
+        }finally {
+            connectLock.unlock();
+        }
+    }
+
+    @Override
+    public void send(Object message) {
+        if(!isConnected()){
+            connect();
+        }
+        NettyConnection connection = NettyConnectionManager.putIfAbsent(channel);
+        connection.send(message);
+    }
+
+    @Override
+    public void disConnect() {
+        connectLock.lock();
+        try{
+            channel.close().syncUninterruptibly();
+            NettyConnectionManager.removeIfDisconnected(channel);
+        }finally {
+            connectLock.unlock();
+        }
+
+    }
+
+    @Override
+    public boolean isConnected() {
+        NettyConnection connection = NettyConnectionManager.putIfAbsent(channel);
+        return connection!=null && !connection.isClosed();
+    }
+}

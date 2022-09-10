@@ -1,5 +1,7 @@
 package io.fxtahe.rpc.common.core;
 
+import io.fxtahe.rpc.common.util.IdGenerator;
+
 /**
  * @author fxtahe
  * @since 2022/8/18 16:15
@@ -12,10 +14,14 @@ public class RpcRequest {
 
     private boolean twoWay;
 
+    private int version;
+
     private Object data;
 
+    private String  serializationName;
 
     public RpcRequest() {
+        this.id = IdGenerator.generateId();
     }
 
     public RpcRequest(long id, boolean heartBeat, boolean twoWay, Object data) {
@@ -55,5 +61,13 @@ public class RpcRequest {
 
     public void setData(Object data) {
         this.data = data;
+    }
+
+    public String getSerializationName() {
+        return serializationName;
+    }
+
+    public void setSerializationName(String serializationName) {
+        this.serializationName = serializationName;
     }
 }

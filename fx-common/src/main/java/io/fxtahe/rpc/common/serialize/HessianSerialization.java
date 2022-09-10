@@ -15,7 +15,7 @@ import java.io.IOException;
  * @since 2022/8/19 10:45
  */
 @Extension(alias = "hessian")
-public class HessianSerialization implements Serialization{
+public class HessianSerialization implements Serialization {
 
     @Override
     public byte[] serialize(Object obj) throws SerializeException {
