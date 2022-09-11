@@ -21,7 +21,6 @@ public class RpcRequest {
     private String  serializationName;
 
     public RpcRequest() {
-        this.id = IdGenerator.generateId();
     }
 
     public RpcRequest(long id, boolean heartBeat, boolean twoWay, Object data) {

@@ -42,6 +42,8 @@ public class NettyClient implements Client {
                     @Override
                     protected void initChannel(SocketChannel ch) throws Exception {
                         ch.pipeline()
+                                .addLast("decoder",new NettyDecoder())
+                                .addLast("encoder",new NettyEncoder())
                                 .addLast("client-idle-handler",new IdleStateHandler(60000,0,0, TimeUnit.MILLISECONDS))
                                 .addLast("cilent-handler",new NettyClientHandler(connectionHandler));
                     }

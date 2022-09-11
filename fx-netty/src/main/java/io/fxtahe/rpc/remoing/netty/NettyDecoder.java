@@ -1,6 +1,7 @@
 package io.fxtahe.rpc.remoing.netty;
 
 import io.fxtahe.rpc.common.core.RpcRequest;
+import io.fxtahe.rpc.common.core.RpcResponse;
 import io.fxtahe.rpc.common.serialize.Serialization;
 import io.fxtahe.rpc.common.serialize.SerializationEnum;
 import io.fxtahe.rpc.common.serialize.SerializationFactory;
@@ -40,6 +41,26 @@ public class NettyDecoder extends ByteToMessageDecoder {
         byte requestByte = in.readByte();
         if ((requestByte & FxProtocol.MESSAGE_FLAG) == 0) {
             //decode response
+            RpcResponse rpcResponse = new RpcResponse();
+            rpcResponse.setHeartBeat((requestByte & FxProtocol.HEART_BEAT) != 0);
+            rpcResponse.setId(id);
+            rpcResponse.setStatus(in.readByte());
+            int dataLength = in.readInt();
+            if(in.readableBytes()<dataLength){
+                in.resetReaderIndex();
+                return;
+            }
+            if(dataLength ==0 ||rpcResponse.isHeartBeat()){
+                rpcResponse.setData(null);
+            }else{
+                byte[] bytes = new byte[dataLength];
+                in.readBytes(bytes);
+                byte serializationId = (byte) (requestByte & FxProtocol.SERIALIZATION_MASK);
+                Serialization serialization = SerializationFactory.buildSerialization(SerializationEnum.getEnum(serializationId));
+                Object deserialize = serialization.deserialize(bytes, Object.class);
+                rpcResponse.setData(deserialize);
+            }
+            out.add(rpcResponse);
 
         } else {
             //decode request

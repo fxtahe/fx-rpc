@@ -30,7 +30,6 @@ public class NettyEncoder extends MessageToByteEncoder<Object> {
             SerializationEnum serializationEnum = SerializationEnum.getEnum(rpcRequest.getSerializationName());
             byte serializationId =serializationEnum.getId();
             byte requestByte = (byte) (serializationId | FxProtocol.MESSAGE_FLAG);
-            int dataLength;
             if(rpcRequest.isTwoWay()){
                 requestByte |= FxProtocol.TWO_WAY;
             }
@@ -38,32 +37,52 @@ public class NettyEncoder extends MessageToByteEncoder<Object> {
                 requestByte |=FxProtocol.HEART_BEAT;
             }
             out.writeByte(requestByte);
-
-
             out.writeByte(StatusConstants.OK);
-            if(rpcRequest.isHeartBeat()){
-                dataLength =0;
-                out.writeInt(dataLength);
-            }else {
-                Serialization serialization = SerializationFactory.buildSerialization(serializationEnum);
-                Object data = rpcRequest.getData();
-                if(Objects.isNull(data)){
-                    dataLength=0;
-                    out.writeInt(dataLength);
-                }else {
-                    byte[] bytes = serialization.serialize(data);
-                    dataLength = bytes.length;
-                    out.writeInt(dataLength);
-                    out.writeBytes(bytes);
-                }
-            }
+            writeBody(out,rpcRequest.getData(),serializationEnum, rpcRequest.isHeartBeat());
         }else if(msg instanceof RpcResponse){
+            RpcResponse rpcResponse = (RpcResponse) msg;
+            long id = rpcResponse.getId();
+            boolean heartBeat = rpcResponse.isHeartBeat();
+            byte status = rpcResponse.getStatus();
+            String serializationName = rpcResponse.getSerializationName();
+            out.writeByte(FxProtocol.MAGIC_NUM);
+            out.writeByte(FxProtocol.VERSION);
+            out.writeLong(id);
+            SerializationEnum serializationEnum = SerializationEnum.getEnum(serializationName);
+            byte requestByte = serializationEnum.getId();
+            if(heartBeat){
+                requestByte |= FxProtocol.HEART_BEAT;
+            }
+            out.writeByte(requestByte);
+            out.writeByte(status);
+            writeBody(out, rpcResponse.getData(), serializationEnum,heartBeat);
 
         }else{
-
+            //do nothing
         }
 
 
+
+    }
+
+
+    private void writeBody(ByteBuf out,Object data,SerializationEnum serializationEnum,boolean heartBeat){
+        int dataLength;
+        if(heartBeat){
+            dataLength = 0;
+            out.writeInt(dataLength);
+        }else{
+            Serialization serialization = SerializationFactory.buildSerialization(serializationEnum);
+            if(Objects.isNull(data)){
+                dataLength=0;
+                out.writeInt(dataLength);
+            }else {
+                byte[] bytes = serialization.serialize(data);
+                dataLength = bytes.length;
+                out.writeInt(dataLength);
+                out.writeBytes(bytes);
+            }
+        }
     }
 
 

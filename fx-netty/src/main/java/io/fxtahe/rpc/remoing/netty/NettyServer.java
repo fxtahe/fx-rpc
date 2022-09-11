@@ -66,7 +66,8 @@ public class NettyServer implements Server {
             @Override
             protected void initChannel(SocketChannel ch) throws Exception {
                 ch.pipeline()
-                        //TODO add protocol decoder encoder
+                        .addLast("decoder",new NettyDecoder())
+                        .addLast("encoder",new NettyEncoder())
                         .addLast("server-idle-handler", new IdleStateHandler(0, 0, 1000, MILLISECONDS))
                         .addLast("server-handler", new NettyServerHandler(connectionHandler));
             }

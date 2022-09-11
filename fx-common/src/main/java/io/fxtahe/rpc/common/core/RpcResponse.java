@@ -19,8 +19,17 @@ public class RpcResponse {
 
     private String errorMsg;
 
+    private String  serializationName;
+
+    public String getSerializationName() {
+        return serializationName;
+    }
+
+    public void setSerializationName(String serializationName) {
+        this.serializationName = serializationName;
+    }
+
     public RpcResponse() {
-        this.id = IdGenerator.generateId();
     }
 
     public long getId() {
