@@ -1,4 +1,4 @@
-package io.fxtahe.rpc.remoing.netty;
+package io.fxtahe.rpc.remoting.netty;
 
 import io.fxtahe.rpc.common.core.RpcRequest;
 import io.fxtahe.rpc.common.core.RpcResponse;

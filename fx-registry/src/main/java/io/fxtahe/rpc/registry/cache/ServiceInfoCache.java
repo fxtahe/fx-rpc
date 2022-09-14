@@ -1,7 +1,7 @@
 package io.fxtahe.rpc.registry.cache;
 
 import io.fxtahe.rpc.common.lifecycle.Closeable;
-import io.fxtahe.rpc.registry.ServiceInstance;
+import io.fxtahe.rpc.common.registry.ServiceInstance;
 
 import java.util.List;
 

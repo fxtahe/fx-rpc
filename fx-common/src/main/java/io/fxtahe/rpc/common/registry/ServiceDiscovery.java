@@ -1,4 +1,4 @@
-package io.fxtahe.rpc.registry;
+package io.fxtahe.rpc.common.registry;
 
 import java.util.List;
 

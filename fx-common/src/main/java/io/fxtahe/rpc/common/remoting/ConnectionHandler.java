@@ -7,13 +7,23 @@ package io.fxtahe.rpc.common.remoting;
 public interface ConnectionHandler {
 
 
-    void connect(Connection connection);
+    default void connect(Connection connection){
 
-    void disConnect(Connection connection);
+    }
 
-    void send(Connection connection, Object message);
+    default void disConnect(Connection connection){
 
-    void received(Connection connection, Object message);
+    }
 
-    void caught(Connection connection, Throwable throwable);
+    default void send(Connection connection, Object message){
+
+    }
+
+    default void received(Connection connection, Object message){
+
+    }
+
+    default void caught(Connection connection, Throwable throwable){
+
+    }
 }

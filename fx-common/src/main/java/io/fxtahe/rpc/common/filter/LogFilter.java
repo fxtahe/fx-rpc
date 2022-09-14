@@ -11,15 +11,16 @@ import org.slf4j.LoggerFactory;
  * @author fxtahe
  * @since 2022/8/19 10:45
  */
-@Extension(alias = "log",order = 0,singleton = true)
+@Extension(alias = "log",order = 0,singleton = true,group = "provider")
 public class LogFilter implements Filter {
 
     private static final Logger log = LoggerFactory.getLogger(LogFilter.class);
 
     @Override
     public Result filter(Invoker invoker, Invocation invocation) {
-
-
-        return null;
+        log.info("log before invoke:"+invoker.getInterface().getName());
+        Result invoke = invoker.invoke(invocation);
+        log.info("log after invoke:"+invoker.getInterface().getName());
+        return invoke;
     }
 }

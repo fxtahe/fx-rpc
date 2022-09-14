@@ -14,7 +14,7 @@ import java.util.List;
 public class FilterChainBuilder {
 
 
-    public Invoker buildFilterChain(final Invoker originalInvoker, String group){
+    public static Invoker buildFilterChain(final Invoker originalInvoker, String group){
 
         List<Filter> filters = ExtensionLoaderFactory.getExtensionLoader(Filter.class).getExtensionsGroup(group);
         Invoker last = originalInvoker;

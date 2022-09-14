@@ -13,6 +13,7 @@
         <module>fx-bom</module>
         <module>fx-registry</module>
         <module>fx-netty</module>
+        <module>test</module>
     </modules>
 
     <properties>

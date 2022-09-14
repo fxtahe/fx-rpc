@@ -1,7 +1,5 @@
 package io.fxtahe.rpc.registry.zookeeper;
 
-import io.fxtahe.rpc.registry.ServiceListener;
-
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;

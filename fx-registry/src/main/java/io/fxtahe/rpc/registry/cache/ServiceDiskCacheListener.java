@@ -1,8 +1,8 @@
 package io.fxtahe.rpc.registry.cache;
 
-import io.fxtahe.rpc.registry.ServiceChangeState;
-import io.fxtahe.rpc.registry.ServiceInstance;
-import io.fxtahe.rpc.registry.ServiceListener;
+import io.fxtahe.rpc.common.registry.ServiceChangeState;
+import io.fxtahe.rpc.common.registry.ServiceInstance;
+import io.fxtahe.rpc.common.registry.ServiceListener;
 
 import java.util.List;
 

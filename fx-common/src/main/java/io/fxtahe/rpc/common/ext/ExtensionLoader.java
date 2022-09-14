@@ -46,6 +46,14 @@ public class ExtensionLoader<T> {
         return extensionClass.getInstance();
     }
 
+    public T getInstance(String name,Class<?>[] parameterTypes,Object[] parameters) {
+        ExtensionClass<T> extensionClass = cache.get(name);
+        if (extensionClass == null) {
+            return null;
+        }
+        return extensionClass.getInstance(parameterTypes,parameters);
+    }
+
 
     public List<T> getExtensions() {
         return cache.values().stream().sorted(Comparator.comparing(ExtensionClass::getOrder)).map(ExtensionClass::getInstance).collect(Collectors.toList());

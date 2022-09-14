@@ -1,9 +1,10 @@
 package io.fxtahe.rpc.registry.cache;
 
-import io.fxtahe.rpc.registry.ServiceListener;
-import io.fxtahe.rpc.registry.ServiceRegistry;
-import io.fxtahe.rpc.registry.ServiceInstance;
-import io.fxtahe.rpc.registry.Subscriber;
+import io.fxtahe.rpc.common.ext.annotation.Extension;
+import io.fxtahe.rpc.common.registry.ServiceInstance;
+import io.fxtahe.rpc.common.registry.ServiceListener;
+import io.fxtahe.rpc.common.registry.ServiceRegistry;
+import io.fxtahe.rpc.common.registry.Subscriber;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,6 +19,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author fxtahe
  * @since 2022/8/23 10:25
  */
+@Extension(alias = "cache",singleton = false)
 public class CacheServiceRegistry implements ServiceRegistry {
 
     private static final Logger log = LoggerFactory.getLogger(CacheServiceRegistry.class);

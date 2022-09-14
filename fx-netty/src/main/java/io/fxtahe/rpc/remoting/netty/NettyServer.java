@@ -1,21 +1,16 @@
-package io.fxtahe.rpc.remoing.netty;
+package io.fxtahe.rpc.remoting.netty;
 
 import io.fxtahe.rpc.common.remoting.ConnectionHandler;
 import io.fxtahe.rpc.common.remoting.Server;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.buffer.PooledByteBufAllocator;
-import io.netty.channel.Channel;
-import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelInitializer;
-import io.netty.channel.ChannelOption;
-import io.netty.channel.EventLoopGroup;
+import io.netty.channel.*;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.timeout.IdleStateHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.InetSocketAddress;
-import java.util.List;
 
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
@@ -45,13 +40,12 @@ public class NettyServer implements Server {
 
     private volatile boolean started;
 
-    private List<NettyConnection> connections;
-
     private InetSocketAddress socketAddress;
 
-    public NettyServer(InetSocketAddress socketAddress, ConnectionHandler connectionHandler) {
-        this.socketAddress = socketAddress;
+    public NettyServer(String host, int port, ConnectionHandler connectionHandler) {
+        this.socketAddress = new InetSocketAddress(host,port);
         this.connectionHandler = connectionHandler;
+        init();
     }
 
     public void init() {
@@ -84,7 +78,9 @@ public class NettyServer implements Server {
                 boss.shutdownGracefully();
                 worker.shutdownGracefully();
             }));
+            started=true;
         }
+
     }
 
     @Override

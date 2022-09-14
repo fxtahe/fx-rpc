@@ -9,7 +9,8 @@ import io.fxtahe.rpc.common.invoke.Invoker;
 public interface ProxyFactory {
 
 
-     <T> T getProxy(Invoker invoker, Class<?>[] interfaces);
+     <T> T getProxy(Invoker invoker, Class<T> interfaces);
 
+     <T> Invoker getInvoker(T ref,Class<T> interfaceClass);
 
 }

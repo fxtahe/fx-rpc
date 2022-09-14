@@ -1,4 +1,4 @@
-package io.fxtahe.rpc.remoing.netty;
+package io.fxtahe.rpc.remoting.netty;
 
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.epoll.Epoll;

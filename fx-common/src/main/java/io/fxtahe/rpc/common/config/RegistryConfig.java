@@ -1,5 +1,7 @@
 package io.fxtahe.rpc.common.config;
 
+import com.google.common.base.Objects;
+
 /**
  * @author fxtahe
  * @since 2022/8/19 15:03
@@ -19,7 +21,6 @@ public class RegistryConfig {
 
     private boolean register;
 
-    private boolean useCache = true;
 
     public String getRegistryType() {
         return registryType;
@@ -69,11 +70,17 @@ public class RegistryConfig {
         this.register = register;
     }
 
-    public boolean isUseCache() {
-        return useCache;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        RegistryConfig that = (RegistryConfig) o;
+        return connectTimeout == that.connectTimeout && readTimeout == that.readTimeout && subscribe == that.subscribe && register == that.register && Objects.equal(registryType, that.registryType) && Objects.equal(connectionString, that.connectionString);
     }
 
-    public void setUseCache(boolean useCache) {
-        this.useCache = useCache;
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(registryType, connectionString, connectTimeout, readTimeout, subscribe, register);
     }
 }

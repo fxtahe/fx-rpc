@@ -1,4 +1,4 @@
-package io.fxtahe.rpc.registry;
+package io.fxtahe.rpc.common.registry;
 
 /**
  * 服务状态
@@ -14,5 +14,10 @@ public enum ServiceState {
     /**
      * service disconnect from registry state
      */
-    DISCONNECTED
+    DISCONNECTED,
+    /**
+     *
+     */
+    RECONNECTED;
+
 }
