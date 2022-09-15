@@ -4,6 +4,9 @@ import io.fxtahe.rpc.common.bootstrap.BootStrap;
 import io.fxtahe.rpc.common.config.BootStrapConfig;
 import io.fxtahe.rpc.common.core.Invocation;
 import io.fxtahe.rpc.common.core.Result;
+import io.fxtahe.rpc.common.core.RpcRequest;
+import io.fxtahe.rpc.common.core.RpcResponse;
+import io.fxtahe.rpc.common.costants.StatusConstants;
 import io.fxtahe.rpc.common.ext.annotation.Extension;
 import io.fxtahe.rpc.common.invoke.Invoker;
 import io.fxtahe.rpc.common.remoting.Connection;
@@ -34,13 +37,24 @@ public class NettyBootstrap implements BootStrap {
     private ConnectionHandler connectionHandler = new ConnectionHandler() {
         @Override
         public void received(Connection connection, Object message) {
-            if(message instanceof Invocation){
-                Invocation invocation = (Invocation) message;
+            RpcRequest rpcRequest = (RpcRequest) message;
+            long id = rpcRequest.getId();
+            Object data = rpcRequest.getData();
+            RpcResponse rpcResponse = new RpcResponse();
+            rpcResponse.setId(id);
+            rpcResponse.setSerializationName(bootStrapConfig.getSerializationName());
+            try{
+                Invocation invocation = (Invocation) data;
                 String interfaceName = invocation.getInterfaceName();
                 Invoker invoker = exporterCache.get(interfaceName);
                 Result invoke = invoker.invoke(invocation);
-                connection.send(invoke);
+                rpcResponse.setData(invoke);
+            }catch (Throwable t){
+                rpcResponse.setStatus(StatusConstants.BAD_RESPONSE);
+                rpcResponse.setSerializationName(rpcRequest.getSerializationName());
+                rpcResponse.setErrorMsg(t.getMessage());
             }
+            connection.send(rpcResponse);
         }
     };
 

@@ -1,0 +1,2 @@
+io.fxtahe.rpc.common.serialize.HessianSerialization
+io.fxtahe.rpc.common.serialize.JsonSerialization

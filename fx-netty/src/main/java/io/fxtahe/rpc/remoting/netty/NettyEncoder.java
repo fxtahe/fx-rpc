@@ -55,13 +55,16 @@ public class NettyEncoder extends MessageToByteEncoder<Object> {
             }
             out.writeByte(requestByte);
             out.writeByte(status);
-            writeBody(out, rpcResponse.getData(), serializationEnum,heartBeat);
+            if(StatusConstants.OK == status){
+                writeBody(out, rpcResponse.getData(), serializationEnum,heartBeat);
+            }else{
+                writeBody(out, rpcResponse.getErrorMsg(), serializationEnum,heartBeat);
+            }
+
 
         }else{
             //do nothing
         }
-
-
 
     }
 
@@ -72,16 +75,21 @@ public class NettyEncoder extends MessageToByteEncoder<Object> {
             dataLength = 0;
             out.writeInt(dataLength);
         }else{
-            Serialization serialization = SerializationFactory.buildSerialization(serializationEnum);
-            if(Objects.isNull(data)){
-                dataLength=0;
-                out.writeInt(dataLength);
-            }else {
-                byte[] bytes = serialization.serialize(data);
-                dataLength = bytes.length;
-                out.writeInt(dataLength);
-                out.writeBytes(bytes);
+            try{
+                Serialization serialization = SerializationFactory.buildSerialization(serializationEnum);
+                if(Objects.isNull(data)){
+                    dataLength=0;
+                    out.writeInt(dataLength);
+                }else {
+                    byte[] bytes = serialization.serialize(data);
+                    dataLength = bytes.length;
+                    out.writeInt(dataLength);
+                    out.writeBytes(bytes);
+                }
+            }catch (Exception e){
+                e.printStackTrace();
             }
+
         }
     }
 

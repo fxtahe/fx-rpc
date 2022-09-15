@@ -4,8 +4,7 @@ import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author fxtahe
@@ -48,8 +47,20 @@ public class ClassUtil {
         primitiveTypeNameMap.put(float.class.getName(), float.class);
         primitiveTypeNameMap.put(double.class.getName(), double.class);
         primitiveTypeNameMap.put(char.class.getName(), char.class);
-    }
 
+
+        registerCommonClasses(Boolean[].class, Byte[].class, Character[].class, Double[].class,
+                Float[].class, Integer[].class, Long[].class, Short[].class);
+        registerCommonClasses(Number.class, Number[].class, String.class, String[].class,
+                Class.class, Class[].class, Object.class, Object[].class);
+        registerCommonClasses(Throwable.class, Exception.class, RuntimeException.class,
+                Error.class, StackTraceElement.class, StackTraceElement[].class);
+        registerCommonClasses(Enum.class, Iterable.class, Iterator.class, Enumeration.class,
+                Collection.class, List.class, Set.class, Map.class, Map.Entry.class, Optional.class);
+    }
+    public static Class<?> forName(String name) throws ClassNotFoundException {
+        return forName(name,null);
+    }
 
     public static Class<?> forName(String name, ClassLoader classLoader) throws ClassNotFoundException {
         if (name == null) {
@@ -152,6 +163,11 @@ public class ClassUtil {
         }
     }
 
+    private static void registerCommonClasses(Class<?>... commonClasses) {
+        for (Class<?> clazz : commonClasses) {
+            commonClassCache.put(clazz.getName(), clazz);
+        }
+    }
 
     /**
      * @return ClassLoader
@@ -179,6 +195,17 @@ public class ClassUtil {
         }
         return classLoader;
     }
+
+
+    public static String getDesc(Class<?>[] classes){
+        StringBuilder stringBuilder = new StringBuilder();
+        for(Class<?> clazz:classes){
+            stringBuilder.append(clazz.getName()).append(",");
+        }
+        String result = stringBuilder.toString();
+        return result.substring(0, result.length() - 1);
+    }
+
 
 
 

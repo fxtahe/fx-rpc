@@ -1,13 +1,14 @@
 package io.fxtahe.rpc.common.config;
 
 import com.google.common.base.Objects;
-import io.fxtahe.rpc.common.remoting.Server;
+
+import java.io.Serializable;
 
 /**
  * @author fxtahe
  * @since 2022/9/13 16:46
  */
-public class BootStrapConfig {
+public class BootStrapConfig implements Serializable {
 
 
     private String host;
@@ -16,8 +17,15 @@ public class BootStrapConfig {
 
     private String serverType;
 
-    private transient Server server;
+    private String  serializationName;
 
+    public String getSerializationName() {
+        return serializationName;
+    }
+
+    public void setSerializationName(String serializationName) {
+        this.serializationName = serializationName;
+    }
 
 
     public String getHost() {

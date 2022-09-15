@@ -35,19 +35,21 @@ public class ProviderConfig<T> extends AbstractConfig<T, ProviderConfig<T>> {
         if (exported) {
             return;
         }
-        synchronized (this){
-            invoker = new ProviderProxyInvoker(ref, interfaceClass,reflectType);
+        synchronized (this) {
+            invoker = new ProviderProxyInvoker(ref, interfaceClass, reflectType);
             for (BootStrapConfig bootStrapConfig : bootStraps) {
                 BootStrap bootStrap = BootStrapFactory.buildBootStrap(bootStrapConfig);
                 bootStrap.export(invoker);
-                for (RegistryConfig registryConfig : registries) {
-                    ServiceRegistry serviceRegistry = ServiceRegistryFactory.buildRegistry(registryConfig);
-                    ServiceInstance serviceInstance = new ServiceInstance();
-                    serviceInstance.setServiceId(interfaceClass.getName());
-                    serviceInstance.setHost(bootStrapConfig.getHost());
-                    serviceInstance.setPort(bootStrapConfig.getPort());
-                    serviceInstance.setId(bootStrapConfig.getHost()+":"+bootStrapConfig.getPort());
-                    serviceRegistry.register(serviceInstance);
+                if (registries != null) {
+                    for (RegistryConfig registryConfig : registries) {
+                        ServiceRegistry serviceRegistry = ServiceRegistryFactory.buildRegistry(registryConfig);
+                        ServiceInstance serviceInstance = new ServiceInstance();
+                        serviceInstance.setServiceId(interfaceClass.getName());
+                        serviceInstance.setHost(bootStrapConfig.getHost());
+                        serviceInstance.setPort(bootStrapConfig.getPort());
+                        serviceInstance.setId(bootStrapConfig.getHost() + ":" + bootStrapConfig.getPort());
+                        serviceRegistry.register(serviceInstance);
+                    }
                 }
             }
             exported = true;
@@ -55,22 +57,24 @@ public class ProviderConfig<T> extends AbstractConfig<T, ProviderConfig<T>> {
     }
 
 
-    public void unExport(){
-        if(!exported){
+    public void unExport() {
+        if (!exported) {
             return;
         }
-        synchronized (this){
+        synchronized (this) {
             for (BootStrapConfig bootStrapConfig : bootStraps) {
                 BootStrap bootStrap = BootStrapFactory.buildBootStrap(bootStrapConfig);
                 bootStrap.unExport(invoker);
-                for (RegistryConfig registryConfig : registries) {
-                    ServiceRegistry serviceRegistry = ServiceRegistryFactory.buildRegistry(registryConfig);
-                    ServiceInstance serviceInstance = new ServiceInstance();
-                    serviceInstance.setServiceId(interfaceClass.getName());
-                    serviceInstance.setHost(bootStrapConfig.getHost());
-                    serviceInstance.setPort(bootStrapConfig.getPort());
-                    serviceInstance.setId(bootStrapConfig.getHost()+":"+bootStrapConfig.getPort());
-                    serviceRegistry.unregister(serviceInstance);
+                if (registries != null) {
+                    for (RegistryConfig registryConfig : registries) {
+                        ServiceRegistry serviceRegistry = ServiceRegistryFactory.buildRegistry(registryConfig);
+                        ServiceInstance serviceInstance = new ServiceInstance();
+                        serviceInstance.setServiceId(interfaceClass.getName());
+                        serviceInstance.setHost(bootStrapConfig.getHost());
+                        serviceInstance.setPort(bootStrapConfig.getPort());
+                        serviceInstance.setId(bootStrapConfig.getHost() + ":" + bootStrapConfig.getPort());
+                        serviceRegistry.unregister(serviceInstance);
+                    }
                 }
             }
             exported = false;
@@ -97,7 +101,6 @@ public class ProviderConfig<T> extends AbstractConfig<T, ProviderConfig<T>> {
     public void setBootStrap(List<BootStrapConfig> servers) {
         this.bootStraps = servers;
     }
-
 
 
     public String getReflectType() {

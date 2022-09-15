@@ -92,6 +92,7 @@ public class NettyClientHandler extends ChannelDuplexHandler {
         try{
             NettyConnection connection = NettyConnectionManager.putIfAbsent(ctx.channel());
             connectionHandler.caught(connection,cause);
+            log.error("client error",cause);
         }finally {
             NettyConnectionManager.removeIfDisconnected(ctx.channel());
         }

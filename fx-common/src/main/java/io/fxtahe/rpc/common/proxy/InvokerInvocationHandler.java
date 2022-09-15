@@ -36,8 +36,7 @@ public class InvokerInvocationHandler implements InvocationHandler {
         } else if (parameterTypes.length == 1 && "equals".equals(methodName)) {
             return invoker.equals(args[0]);
         }
-
-        Invocation invocation = new Invocation( method.getName(),invoker.getInterface().getName(),args, method.getParameterTypes() );
+        Invocation invocation = new Invocation( method.getName(),invoker.getInterface().getName(),args, method.getParameterTypes() ,method.getReturnType());
         return invoker.invoke(invocation);
     }
 }

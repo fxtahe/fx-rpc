@@ -20,7 +20,8 @@ public class NettyConnectionManager {
     public static NettyConnection putIfAbsent(Channel channel){
         NettyConnection connection = null;
         if(channel!=null && channel.isActive()){
-             connection = CONNECTION_CACHE.putIfAbsent(channel, new NettyConnection(channel));
+             connection = CONNECTION_CACHE.computeIfAbsent(channel, NettyConnection::new);
+            System.out.println(connection);
             if(connection.isClosed()){
                 CONNECTION_CACHE.remove(channel);
                 connection=null;

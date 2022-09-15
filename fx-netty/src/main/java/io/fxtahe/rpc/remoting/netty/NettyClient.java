@@ -57,7 +57,7 @@ public class NettyClient implements Client {
     public void connect() {
         connectLock.lock();
         try{
-            ChannelFuture channelFuture = bootstrap.connect().syncUninterruptibly();
+            ChannelFuture channelFuture = bootstrap.connect(remoteAddress).syncUninterruptibly();
             Channel newChannel = channelFuture.channel();
             if(this.channel !=null){
                 this.channel.close().syncUninterruptibly();

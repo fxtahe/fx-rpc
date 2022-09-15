@@ -6,6 +6,8 @@ import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPromise;
 import io.netty.handler.timeout.IdleStateEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author fxtahe
@@ -15,6 +17,7 @@ import io.netty.handler.timeout.IdleStateEvent;
 public class NettyServerHandler extends ChannelDuplexHandler {
 
 
+    public static final Logger log = LoggerFactory.getLogger(NettyServerHandler.class);
     private ConnectionHandler connectionHandler;
 
 
@@ -60,6 +63,7 @@ public class NettyServerHandler extends ChannelDuplexHandler {
         NettyConnection connection = NettyConnectionManager.putIfAbsent(ctx.channel());
         try{
             connectionHandler.caught(connection,cause);
+            log.error("server error",cause);
         }finally {
             NettyConnectionManager.removeIfDisconnected(ctx.channel());
         }

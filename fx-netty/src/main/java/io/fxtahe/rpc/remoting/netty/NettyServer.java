@@ -62,7 +62,7 @@ public class NettyServer implements Server {
                 ch.pipeline()
                         .addLast("decoder",new NettyDecoder())
                         .addLast("encoder",new NettyEncoder())
-                        .addLast("server-idle-handler", new IdleStateHandler(0, 0, 1000, MILLISECONDS))
+                        .addLast("server-idle-handler", new IdleStateHandler(0, 0, 100000, MILLISECONDS))
                         .addLast("server-handler", new NettyServerHandler(connectionHandler));
             }
         });

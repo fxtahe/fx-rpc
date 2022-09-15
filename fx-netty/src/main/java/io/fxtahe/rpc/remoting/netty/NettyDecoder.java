@@ -1,7 +1,11 @@
 package io.fxtahe.rpc.remoting.netty;
 
+import io.fxtahe.rpc.common.core.Invocation;
 import io.fxtahe.rpc.common.core.RpcRequest;
 import io.fxtahe.rpc.common.core.RpcResponse;
+import io.fxtahe.rpc.common.costants.StatusConstants;
+import io.fxtahe.rpc.common.future.FutureManager;
+import io.fxtahe.rpc.common.future.RpcFuture;
 import io.fxtahe.rpc.common.serialize.Serialization;
 import io.fxtahe.rpc.common.serialize.SerializationEnum;
 import io.fxtahe.rpc.common.serialize.SerializationFactory;
@@ -39,35 +43,43 @@ public class NettyDecoder extends ByteToMessageDecoder {
         }
         long id = in.readLong();
         byte requestByte = in.readByte();
+        byte serializationId = (byte) (requestByte & FxProtocol.SERIALIZATION_MASK);
+        Serialization serialization = SerializationFactory.buildSerialization(SerializationEnum.getEnum(serializationId));
         if ((requestByte & FxProtocol.MESSAGE_FLAG) == 0) {
             //decode response
             RpcResponse rpcResponse = new RpcResponse();
             rpcResponse.setHeartBeat((requestByte & FxProtocol.HEART_BEAT) != 0);
             rpcResponse.setId(id);
-            rpcResponse.setStatus(in.readByte());
+            byte status = in.readByte();
+            rpcResponse.setStatus(status);
             int dataLength = in.readInt();
             if(in.readableBytes()<dataLength){
                 in.resetReaderIndex();
                 return;
             }
-            if(dataLength ==0 ||rpcResponse.isHeartBeat()){
-                rpcResponse.setData(null);
+            byte[] bytes = new byte[dataLength];
+            in.readBytes(bytes);
+            if(StatusConstants.OK == status){
+                if(dataLength ==0 ||rpcResponse.isHeartBeat()){
+                    rpcResponse.setData(null);
+                }else{
+                    Invocation invocation = getInvocation(id);
+                    Object deserialize = serialization.deserialize(bytes, invocation.getReturnType());
+                    rpcResponse.setData(deserialize);
+                }
             }else{
-                byte[] bytes = new byte[dataLength];
-                in.readBytes(bytes);
-                byte serializationId = (byte) (requestByte & FxProtocol.SERIALIZATION_MASK);
-                Serialization serialization = SerializationFactory.buildSerialization(SerializationEnum.getEnum(serializationId));
-                Object deserialize = serialization.deserialize(bytes, Object.class);
-                rpcResponse.setData(deserialize);
+                if(dataLength !=0 ){
+                    rpcResponse.setErrorMsg(serialization.deserialize(bytes,String.class));
+                }
             }
             out.add(rpcResponse);
-
         } else {
             //decode request
             RpcRequest rpcRequest = new RpcRequest();
             rpcRequest.setTwoWay((requestByte & FxProtocol.TWO_WAY) != 0);
             rpcRequest.setHeartBeat((requestByte & FxProtocol.HEART_BEAT) != 0);
             rpcRequest.setId(id);
+            rpcRequest.setSerializationName(SerializationEnum.getEnum(serializationId).getName());
             in.skipBytes(1);
 
             int dataLength = in.readInt();
@@ -80,13 +92,21 @@ public class NettyDecoder extends ByteToMessageDecoder {
             }else{
                 byte[] bytes = new byte[dataLength];
                 in.readBytes(bytes);
-                byte serializationId = (byte) (requestByte & FxProtocol.SERIALIZATION_MASK);
-                Serialization serialization = SerializationFactory.buildSerialization(SerializationEnum.getEnum(serializationId));
-                Object deserialize = serialization.deserialize(bytes, Object.class);
+                Object deserialize = serialization.deserialize(bytes, Invocation.class);
                 rpcRequest.setData(deserialize);
             }
             out.add(rpcRequest);
         }
 
+    }
+
+    /**
+     * @param id requestId
+     * @return invocation
+     */
+    private Invocation getInvocation(long id) {
+        RpcFuture future = FutureManager.getFuture(id);
+        RpcRequest rpcRequest = future.getRpcRequest();
+        return (Invocation) rpcRequest.getData();
     }
 }
