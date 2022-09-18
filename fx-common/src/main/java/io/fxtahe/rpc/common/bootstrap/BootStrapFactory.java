@@ -1,6 +1,6 @@
 package io.fxtahe.rpc.common.bootstrap;
 
-import io.fxtahe.rpc.common.config.BootStrapConfig;
+import io.fxtahe.rpc.common.config.ServerConfig;
 import io.fxtahe.rpc.common.ext.ExtensionLoaderFactory;
 
 import java.util.Map;
@@ -12,12 +12,12 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class BootStrapFactory {
 
-    private static final Map<BootStrapConfig,BootStrap> bootStrapCache = new ConcurrentHashMap<>();
+    private static final Map<String,BootStrap> bootStrapCache = new ConcurrentHashMap<>();
 
 
-    public static BootStrap buildBootStrap(BootStrapConfig bootStrapConfig){
-        return bootStrapCache.computeIfAbsent(bootStrapConfig, (config) ->
-                ExtensionLoaderFactory.getExtensionLoader(BootStrap.class).getInstance(config.getServerType(), new Class[]{BootStrapConfig.class}, new Object[]{config})
+    public static BootStrap buildBootStrap(String bootStrapType){
+        return bootStrapCache.computeIfAbsent(bootStrapType, (key) ->
+                ExtensionLoaderFactory.getExtensionLoader(BootStrap.class).getInstance(key)
         );
     }
 

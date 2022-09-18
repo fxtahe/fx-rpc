@@ -26,6 +26,17 @@ public class RpcFuture extends CompletableFuture<Object> {
         }
     }
 
+    @Override
+    public boolean cancel(boolean mayInterruptIfRunning) {
+        FutureManager.removeFuture(this.id);
+        RpcResponse rpcResponse = new RpcResponse();
+        rpcResponse.setId(this.id);
+        rpcResponse.setStatus(StatusConstants.BAD_REQUEST);
+        this.received(rpcResponse);
+        return true;
+
+    }
+
     public long getId() {
         return id;
     }

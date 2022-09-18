@@ -64,6 +64,10 @@ public class ServiceInstance implements Serializable {
         this.metaData = metaData;
     }
 
+    public String getAddress(){
+        return String.join(":",host,String.valueOf(port));
+    }
+
 
     @Override
     public boolean equals(Object o) {

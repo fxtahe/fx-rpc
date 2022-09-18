@@ -12,5 +12,5 @@ import java.util.List;
 public interface LoadBalance {
 
 
-    List<ServiceInstance> select(Invocation invocation, List<ServiceInstance> serviceInstances);
+    ServiceInstance select( List<ServiceInstance> serviceInstances,Invocation invocation);
 }

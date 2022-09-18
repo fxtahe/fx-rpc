@@ -36,4 +36,8 @@ public abstract class AbstractConfig<T,S extends AbstractConfig<T, S>> {
         registries = registryConfig;
         return (S) this;
     }
+
+    public List<RegistryConfig> getRegistries() {
+        return registries;
+    }
 }

@@ -12,6 +12,10 @@ public class AsyncResult implements Result {
 
     private CompletableFuture<AppResult> resultFuture;
 
+    public AsyncResult(CompletableFuture<AppResult> resultFuture) {
+        this.resultFuture = resultFuture;
+    }
+
     @Override
     public Object getValue() {
         if (resultFuture.isDone()) {

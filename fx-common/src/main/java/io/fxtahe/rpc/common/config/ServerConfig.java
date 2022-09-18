@@ -8,7 +8,7 @@ import java.io.Serializable;
  * @author fxtahe
  * @since 2022/9/13 16:46
  */
-public class BootStrapConfig implements Serializable {
+public class ServerConfig implements Serializable {
 
 
     private String host;
@@ -52,11 +52,15 @@ public class BootStrapConfig implements Serializable {
         this.serverType = serverType;
     }
 
+    public String getAddress(){
+        return String.join(":",host,String.valueOf(port));
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        BootStrapConfig that = (BootStrapConfig) o;
+        ServerConfig that = (ServerConfig) o;
         return port == that.port && Objects.equal(host, that.host) && Objects.equal(serverType, that.serverType);
     }
 

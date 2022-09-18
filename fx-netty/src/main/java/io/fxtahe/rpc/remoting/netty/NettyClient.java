@@ -8,6 +8,7 @@ import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
+import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.timeout.IdleStateHandler;
 
@@ -30,10 +31,12 @@ public class NettyClient implements Client {
 
     private Channel channel;
 
+    private volatile boolean closed;
+
     private final Lock connectLock = new ReentrantLock();
 
-    public NettyClient(InetSocketAddress remoteAddress, ConnectionHandler connectionHandler) {
-        this.remoteAddress = remoteAddress;
+    public NettyClient(String host, int port, ConnectionHandler connectionHandler) {
+        this.remoteAddress = new InetSocketAddress(host,port);
         eventLoopGroup = NettyEventLoopFactory.buildEventLoopGroup(Runtime.getRuntime().availableProcessors());
         bootstrap = new Bootstrap().group(eventLoopGroup)
                 .channel(NettyEventLoopFactory.socketChannelClass())
@@ -105,5 +108,23 @@ public class NettyClient implements Client {
     public boolean isConnected() {
         NettyConnection connection = NettyConnectionManager.putIfAbsent(channel);
         return connection!=null && !connection.isClosed();
+    }
+
+    @Override
+    public void close() {
+        if(!closed){
+            connectLock.lock();
+            try{
+                disConnect();
+            }finally {
+                eventLoopGroup.shutdownGracefully();
+                connectLock.unlock();
+            }
+        }
+    }
+
+    @Override
+    public boolean isClosed() {
+        return closed;
     }
 }

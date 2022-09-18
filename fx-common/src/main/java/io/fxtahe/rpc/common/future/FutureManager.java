@@ -26,4 +26,8 @@ public class FutureManager {
         return futures.get(id);
     }
 
+
+    public static RpcFuture removeFuture(long id){
+        return futures.remove(id);
+    }
 }

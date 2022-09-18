@@ -36,12 +36,12 @@ public interface ServiceRegistry{
     /**
      * subscribe service
      */
-    void subscribe(Subscriber subscriber);
+    void subscribe(String serviceId,ServiceListener serviceListener);
 
     /**
      * unsubscribe service
      */
-    void unsubscribe(Subscriber subscriber);
+    void unsubscribe(String serviceId,ServiceListener serviceListener);
 
 
 

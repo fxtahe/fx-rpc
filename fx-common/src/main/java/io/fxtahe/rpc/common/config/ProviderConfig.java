@@ -18,7 +18,7 @@ import java.util.List;
 public class ProviderConfig<T> extends AbstractConfig<T, ProviderConfig<T>> {
 
 
-    private List<BootStrapConfig> bootStraps;
+    private List<ServerConfig> bootStraps;
 
     private T ref;
 
@@ -37,17 +37,17 @@ public class ProviderConfig<T> extends AbstractConfig<T, ProviderConfig<T>> {
         }
         synchronized (this) {
             invoker = new ProviderProxyInvoker(ref, interfaceClass, reflectType);
-            for (BootStrapConfig bootStrapConfig : bootStraps) {
-                BootStrap bootStrap = BootStrapFactory.buildBootStrap(bootStrapConfig);
-                bootStrap.export(invoker);
+            for (ServerConfig serverConfig : bootStraps) {
+                BootStrap bootStrap = BootStrapFactory.buildBootStrap(serverConfig.getServerType());
+                bootStrap.export(invoker,serverConfig);
                 if (registries != null) {
                     for (RegistryConfig registryConfig : registries) {
                         ServiceRegistry serviceRegistry = ServiceRegistryFactory.buildRegistry(registryConfig);
                         ServiceInstance serviceInstance = new ServiceInstance();
                         serviceInstance.setServiceId(interfaceClass.getName());
-                        serviceInstance.setHost(bootStrapConfig.getHost());
-                        serviceInstance.setPort(bootStrapConfig.getPort());
-                        serviceInstance.setId(bootStrapConfig.getHost() + ":" + bootStrapConfig.getPort());
+                        serviceInstance.setHost(serverConfig.getHost());
+                        serviceInstance.setPort(serverConfig.getPort());
+                        serviceInstance.setId(serverConfig.getHost() + ":" + serverConfig.getPort());
                         serviceRegistry.register(serviceInstance);
                     }
                 }
@@ -62,17 +62,17 @@ public class ProviderConfig<T> extends AbstractConfig<T, ProviderConfig<T>> {
             return;
         }
         synchronized (this) {
-            for (BootStrapConfig bootStrapConfig : bootStraps) {
-                BootStrap bootStrap = BootStrapFactory.buildBootStrap(bootStrapConfig);
+            for (ServerConfig serverConfig : bootStraps) {
+                BootStrap bootStrap = BootStrapFactory.buildBootStrap(serverConfig.getServerType());
                 bootStrap.unExport(invoker);
                 if (registries != null) {
                     for (RegistryConfig registryConfig : registries) {
                         ServiceRegistry serviceRegistry = ServiceRegistryFactory.buildRegistry(registryConfig);
                         ServiceInstance serviceInstance = new ServiceInstance();
                         serviceInstance.setServiceId(interfaceClass.getName());
-                        serviceInstance.setHost(bootStrapConfig.getHost());
-                        serviceInstance.setPort(bootStrapConfig.getPort());
-                        serviceInstance.setId(bootStrapConfig.getHost() + ":" + bootStrapConfig.getPort());
+                        serviceInstance.setHost(serverConfig.getHost());
+                        serviceInstance.setPort(serverConfig.getPort());
+                        serviceInstance.setId(serverConfig.getHost() + ":" + serverConfig.getPort());
                         serviceRegistry.unregister(serviceInstance);
                     }
                 }
@@ -91,14 +91,14 @@ public class ProviderConfig<T> extends AbstractConfig<T, ProviderConfig<T>> {
     }
 
 
-    public void setBootStrap(BootStrapConfig server) {
+    public void setBootStrap(ServerConfig server) {
         if (bootStraps == null || bootStraps.isEmpty()) {
             bootStraps = new ArrayList<>();
         }
         bootStraps.add(server);
     }
 
-    public void setBootStrap(List<BootStrapConfig> servers) {
+    public void setBootStrap(List<ServerConfig> servers) {
         this.bootStraps = servers;
     }
 

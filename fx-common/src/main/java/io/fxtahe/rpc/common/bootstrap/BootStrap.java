@@ -1,6 +1,9 @@
 package io.fxtahe.rpc.common.bootstrap;
 
+import io.fxtahe.rpc.common.config.ServerConfig;
 import io.fxtahe.rpc.common.invoke.Invoker;
+import io.fxtahe.rpc.common.registry.ServiceInstance;
+import io.fxtahe.rpc.common.remoting.Client;
 
 /**
  * @author fxtahe
@@ -10,9 +13,8 @@ public interface BootStrap {
 
     /**
      * export service
-     * @return invoker
      */
-    void export(Invoker invoker);
+    void export(Invoker invoker, ServerConfig serverConfig);
 
     /**
      * unExport service
@@ -20,14 +22,13 @@ public interface BootStrap {
     void unExport(Invoker invoker);
 
     /**
-     * refer service
-     * @return invoker
+     *
      */
-    Invoker refer();
+    Client refer(ServiceInstance serviceInstance);
 
     /**
-     * unRefer service
+     *
      */
-    void unRefer();
+    void unRefer(String serviceId);
 
 }
