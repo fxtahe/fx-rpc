@@ -7,7 +7,6 @@ import io.fxtahe.rpc.common.ext.annotation.Extension;
 import io.fxtahe.rpc.common.registry.ServiceInstance;
 import io.fxtahe.rpc.common.registry.ServiceListener;
 import io.fxtahe.rpc.common.registry.ServiceRegistry;
-import io.fxtahe.rpc.common.registry.Subscriber;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.framework.imps.CuratorFrameworkState;
@@ -88,16 +87,12 @@ public class ZookeeperServiceRegistry implements ServiceRegistry {
     }
 
     @Override
-    public void subscribe(Subscriber subscriber) {
-        String serviceId = subscriber.getServiceId();
-        ServiceListener serviceListener = subscriber.getServiceListener();
+    public void subscribe(String serviceId,ServiceListener serviceListener) {
         zookeeperListenerRegistry.registerServiceListener(serviceId,serviceListener);
     }
 
     @Override
-    public void unsubscribe(Subscriber subscriber) {
-        String serviceId = subscriber.getServiceId();
-        ServiceListener serviceListener = subscriber.getServiceListener();
+    public void unsubscribe(String serviceId,ServiceListener serviceListener) {
         zookeeperListenerRegistry.unregisterServiceLister(serviceId,serviceListener);
     }
 

@@ -1,10 +1,7 @@
 package io.fxtahe.rpc.registry.cache;
 
 import io.fxtahe.rpc.common.ext.annotation.Extension;
-import io.fxtahe.rpc.common.registry.ServiceInstance;
-import io.fxtahe.rpc.common.registry.ServiceListener;
-import io.fxtahe.rpc.common.registry.ServiceRegistry;
-import io.fxtahe.rpc.common.registry.Subscriber;
+import io.fxtahe.rpc.common.registry.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,13 +17,13 @@ import java.util.concurrent.ConcurrentHashMap;
  * @since 2022/8/23 10:25
  */
 @Extension(alias = "cache",singleton = false)
-public class CacheServiceRegistry implements ServiceRegistry {
+public class CacheServiceRegistry implements ServiceRegistry ,ServiceListener{
 
     private static final Logger log = LoggerFactory.getLogger(CacheServiceRegistry.class);
 
     private final Map<String, List<ServiceInstance>> registerInstances = new ConcurrentHashMap<>();
 
-    private final Map<String, List<Subscriber>> subscribers = new ConcurrentHashMap<>();
+    private final Map<String, List<ServiceListener>> subscribers = new ConcurrentHashMap<>();
 
     private ServiceRegistry registry;
 
@@ -88,28 +85,22 @@ public class CacheServiceRegistry implements ServiceRegistry {
     }
 
     @Override
-    public void subscribe(Subscriber subscriber) {
-        List<Subscriber> subscribers = this.subscribers.computeIfAbsent(subscriber.getServiceId(), key -> new ArrayList<>());
-        subscribers.add(subscriber);
-        registry.subscribe(subscriber);
-        //register service change cache listener
-        Subscriber cacheSubscriber = new Subscriber(subscriber.getServiceId(), subscriber.getAddress(), cacheServiceListener);
-        registry.subscribe(cacheSubscriber);
+    public void subscribe(String serviceId,ServiceListener serviceListener) {
+        List<ServiceListener> subscribers = this.subscribers.computeIfAbsent(serviceId, key -> new ArrayList<>());
+        if(serviceListener!=null)subscribers.add(serviceListener);
+        registry.subscribe(serviceId,this);
     }
 
     @Override
-    public void unsubscribe(Subscriber subscriber) {
-        List<Subscriber> subscribers = this.subscribers.get(subscriber.getServiceId());
+    public void unsubscribe(String serviceId,ServiceListener serviceListener) {
+        List<ServiceListener> subscribers = this.subscribers.get(serviceId);
         if (subscribers != null && subscribers.size() > 0) {
-            subscribers.remove(subscriber);
+            subscribers.remove(serviceListener);
             if (subscribers.size() == 0) {
-                this.subscribers.remove(subscriber.getServiceId());
+                this.subscribers.remove(serviceId);
             }
         }
-        registry.unsubscribe(subscriber);
-        //unregister service change cache listener
-        Subscriber cacheSubscriber = new Subscriber(subscriber.getServiceId(), subscriber.getAddress(), cacheServiceListener);
-        registry.unsubscribe(cacheSubscriber);
+        registry.unsubscribe(serviceId,this);
     }
 
 
@@ -122,11 +113,19 @@ public class CacheServiceRegistry implements ServiceRegistry {
 
     public void recoverSubscriber(){
         log.info("recover subscribers");
-        for(List<Subscriber> subscriber:subscribers.values()){
-            subscriber.forEach(el->registry.subscribe(el));
+        for(Map.Entry<String,List<ServiceListener>> subscriber:subscribers.entrySet()){
+            subscriber.getValue().forEach(el->registry.subscribe(subscriber.getKey(),el));
         }
     }
 
-
-
+    @Override
+    public void onStateChange(String serviceId, List<ServiceInstance> serviceInstances, ServiceChangeState newState) {
+        cacheServiceListener.onStateChange(serviceId,serviceInstances,newState);
+        List<ServiceListener> serviceListeners = subscribers.get(serviceId);
+        if(serviceInstances!=null){
+            serviceListeners.forEach(serviceListener -> {
+                serviceListener.onStateChange(serviceId,serviceInstances,newState);
+            });
+        }
+    }
 }
