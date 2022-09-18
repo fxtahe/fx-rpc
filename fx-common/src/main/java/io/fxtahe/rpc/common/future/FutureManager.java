@@ -11,7 +11,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class FutureManager {
 
-    public static final Map<Long,RpcFuture> futures = new ConcurrentHashMap<>();
+    public static final Map<Long, RpcFuture> futures = new ConcurrentHashMap<>();
 
     public static RpcFuture createFuture(RpcRequest rpcRequest){
         long id = rpcRequest.getId();

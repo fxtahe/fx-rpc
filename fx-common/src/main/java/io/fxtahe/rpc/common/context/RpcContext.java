@@ -1,4 +1,4 @@
-package io.fxtahe.rpc.common.rpc;
+package io.fxtahe.rpc.common.context;
 
 import io.fxtahe.rpc.common.core.Result;
 
@@ -22,6 +22,8 @@ public class RpcContext {
         this.future = future;
     }
 
-
+    public static RpcContext getContext(){
+        return context.get();
+    }
 
 }
