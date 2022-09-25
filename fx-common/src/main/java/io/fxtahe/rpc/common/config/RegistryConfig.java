@@ -9,7 +9,11 @@ import com.google.common.base.Objects;
 public class RegistryConfig {
 
 
-    private String registryType;
+    private String registryType = "zookeeper";
+
+    private boolean useCache = true;
+
+    private boolean autoRecover = true;
 
     private String connectionString;
 
@@ -17,9 +21,6 @@ public class RegistryConfig {
 
     private int readTimeout;
 
-    private boolean subscribe;
-
-    private boolean register;
 
 
     public String getRegistryType() {
@@ -54,33 +55,32 @@ public class RegistryConfig {
         this.readTimeout = readTimeout;
     }
 
-    public boolean isSubscribe() {
-        return subscribe;
+    public boolean isUseCache() {
+        return useCache;
     }
 
-    public void setSubscribe(boolean subscribe) {
-        this.subscribe = subscribe;
+    public void setUseCache(boolean useCache) {
+        this.useCache = useCache;
     }
 
-    public boolean isRegister() {
-        return register;
+    public boolean isAutoRecover() {
+        return autoRecover;
     }
 
-    public void setRegister(boolean register) {
-        this.register = register;
+    public void setAutoRecover(boolean autoRecover) {
+        this.autoRecover = autoRecover;
     }
-
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         RegistryConfig that = (RegistryConfig) o;
-        return connectTimeout == that.connectTimeout && readTimeout == that.readTimeout && subscribe == that.subscribe && register == that.register && Objects.equal(registryType, that.registryType) && Objects.equal(connectionString, that.connectionString);
+        return useCache == that.useCache && autoRecover == that.autoRecover && connectTimeout == that.connectTimeout && readTimeout == that.readTimeout && Objects.equal(registryType, that.registryType) && Objects.equal(connectionString, that.connectionString);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(registryType, connectionString, connectTimeout, readTimeout, subscribe, register);
+        return Objects.hashCode(registryType, useCache, autoRecover, connectionString, connectTimeout, readTimeout);
     }
 }

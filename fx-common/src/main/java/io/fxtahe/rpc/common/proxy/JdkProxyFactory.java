@@ -38,7 +38,8 @@ public class JdkProxyFactory implements ProxyFactory {
                 Class<?>[] parameterTypes = invocation.getParameterTypes();
                 try {
                     Method method = ref.getClass().getMethod(methodName, parameterTypes);
-                    method.invoke(ref, arguments);
+                    Object invoke = method.invoke(ref, arguments);
+                    appResult.setValue(invoke);
                 } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
                     appResult.setException(e);
                 }
@@ -46,8 +47,8 @@ public class JdkProxyFactory implements ProxyFactory {
             }
 
             @Override
-            public Class<?> getInterface() {
-                return interfaceClass;
+            public String getInterfaceName() {
+                return interfaceClass.getName();
             }
         };
     }

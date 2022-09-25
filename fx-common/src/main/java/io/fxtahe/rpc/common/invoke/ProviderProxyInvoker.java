@@ -27,7 +27,7 @@ public class ProviderProxyInvoker implements Invoker{
     }
 
     @Override
-    public Class<?> getInterface() {
-        return filterChainInvoker.getInterface();
+    public String getInterfaceName() {
+        return filterChainInvoker.getInterfaceName();
     }
 }

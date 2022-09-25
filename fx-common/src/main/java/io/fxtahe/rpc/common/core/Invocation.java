@@ -3,6 +3,8 @@ package io.fxtahe.rpc.common.core;
 import io.fxtahe.rpc.common.util.ClassUtil;
 
 import java.io.Serializable;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author fxtahe
@@ -22,16 +24,19 @@ public class Invocation implements Serializable {
 
     private Class<?> returnType;
 
+    private Map<String,Object> attributes;
+
     public Invocation() {
     }
 
-    public Invocation(String methodName, String interfaceName, Object[] arguments, Class<?>[] parameterTypes, Class<?> returnType) {
+    public Invocation(String methodName, String interfaceName, Object[] arguments, Class<?>[] parameterTypes, Class<?> returnType,Map<String,Object> attributes) {
         this.methodName = methodName;
         this.interfaceName = interfaceName;
         this.arguments = arguments;
         this.returnType = returnType;
         this.parameterTypes = parameterTypes == null ? new Class[0] : parameterTypes;
         this.parameterTypesDesc = parameterTypes == null ? "" : ClassUtil.getDesc(parameterTypes);
+        this.attributes = attributes==null?new ConcurrentHashMap<>():attributes;
     }
 
 
@@ -83,5 +88,13 @@ public class Invocation implements Serializable {
         this.returnType = returnType;
     }
 
+
+    public Object getAttribute(String key){
+        return attributes.get(key);
+    }
+
+    public void setAttribute(String key,Object value){
+        attributes.put(key,value);
+    }
 
 }

@@ -43,6 +43,6 @@ public interface ServiceRegistry{
      */
     void unsubscribe(String serviceId,ServiceListener serviceListener);
 
-
+    default void setRecoverStrategy(RecoverStrategy recoverStrategy){}
 
 }

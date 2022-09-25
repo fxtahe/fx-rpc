@@ -4,6 +4,7 @@ package io.fxtahe.rpc.registry.zookeeper;
 import io.fxtahe.rpc.common.config.RegistryConfig;
 import io.fxtahe.rpc.common.exception.RegisterException;
 import io.fxtahe.rpc.common.ext.annotation.Extension;
+import io.fxtahe.rpc.common.registry.RecoverStrategy;
 import io.fxtahe.rpc.common.registry.ServiceInstance;
 import io.fxtahe.rpc.common.registry.ServiceListener;
 import io.fxtahe.rpc.common.registry.ServiceRegistry;
@@ -33,36 +34,33 @@ public class ZookeeperServiceRegistry implements ServiceRegistry {
 
     private ZookeeperListenerRegistry zookeeperListenerRegistry;
 
+    private CuratorFramework client;
+
     private final String basePath ="/fx-rpc";
 
 
     public ZookeeperServiceRegistry(RegistryConfig registryConfig) {
-        CuratorFramework curatorFramework = CuratorFrameworkFactory.builder().
+        client= CuratorFrameworkFactory.builder().
                 connectString(registryConfig.getConnectionString())
                 .connectionTimeoutMs(registryConfig.getConnectTimeout())
                 .sessionTimeoutMs(registryConfig.getReadTimeout())
                 .retryPolicy(new ExponentialBackoffRetry(1000, 3, 200))
                 .build();
-        curatorFramework.start();
+        client.start();
         try {
-            if(!curatorFramework.blockUntilConnected(2000, TimeUnit.MILLISECONDS)){
+            if(!client.blockUntilConnected(2000, TimeUnit.MILLISECONDS)){
                 throw new RegisterException("zookeeper client start fail.");
             }
         } catch (InterruptedException exception) {
             throw new RegisterException("zookeeper client start fail.");
         }
 
-        if(curatorFramework.getState()!=CuratorFrameworkState.STARTED){
+        if(client.getState()!=CuratorFrameworkState.STARTED){
             throw new IllegalStateException("zookeeper client state illegal ");
         }
-        curatorFramework.getConnectionStateListenable().addListener((client, newState) -> {
-            if (newState == ConnectionState.RECONNECTED) {
 
-                //TODO
-            }
-        });
         this.serviceDiscovery = ServiceDiscoveryBuilder.builder(ServiceInstance.class)
-                .client(curatorFramework)
+                .client(client)
                 .basePath(basePath)
                 .build();
         this.zookeeperListenerRegistry = new ZookeeperListenerRegistry(serviceDiscovery);
@@ -122,5 +120,13 @@ public class ZookeeperServiceRegistry implements ServiceRegistry {
         return org.apache.curator.x.discovery.ServiceInstance.builder().name(registration.getServiceId())
                 .id(registration.getId()).address(registration.getHost()).
                         port(registration.getPort()).payload(registration).build();
+    }
+
+    public void setRecoverStrategy(RecoverStrategy recoverStrategy){
+        client.getConnectionStateListenable().addListener(((curatorFramework, connectionState) -> {
+            if(connectionState == ConnectionState.RECONNECTED){
+                recoverStrategy.recover();
+            }
+        }));
     }
 }

@@ -40,19 +40,19 @@ public class FilterChainBuilder {
         @Override
         public Result invoke(Invocation invocation) {
             Result result = this.filter.filter(nextNode, invocation);
-            result.whenComplete((r,t)->{
-                if(t==null){
-                    filter.onResponse(r,invocation);
-                }else{
-                    filter.onError(t,invocation);
+            result = result.whenComplete((r, t) -> {
+                if (t == null) {
+                    filter.onResponse(r, invocation);
+                } else {
+                    filter.onError(t, invocation);
                 }
             });
             return result;
         }
 
         @Override
-        public Class<?> getInterface() {
-            return nextNode.getInterface();
+        public String getInterfaceName() {
+            return nextNode.getInterfaceName();
         }
     }
 

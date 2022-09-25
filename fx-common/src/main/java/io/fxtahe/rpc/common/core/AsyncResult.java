@@ -1,5 +1,7 @@
 package io.fxtahe.rpc.common.core;
 
+import io.fxtahe.rpc.common.util.ClassUtil;
+
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BiConsumer;
 
@@ -9,11 +11,12 @@ import java.util.function.BiConsumer;
  */
 public class AsyncResult implements Result {
 
-
+    private final Invocation invocation;
     private CompletableFuture<AppResult> resultFuture;
 
-    public AsyncResult(CompletableFuture<AppResult> resultFuture) {
+    public AsyncResult(CompletableFuture<AppResult> resultFuture,Invocation invocation) {
         this.resultFuture = resultFuture;
+        this.invocation = invocation;
     }
 
     @Override
@@ -26,7 +29,7 @@ public class AsyncResult implements Result {
             }
         }
 
-        return null;
+        return createDefaultResponse().getValue();
     }
 
     @Override
@@ -81,5 +84,24 @@ public class AsyncResult implements Result {
     public Result whenComplete(BiConsumer<Result, Throwable> fn) {
         resultFuture.whenComplete(fn);
         return this;
+    }
+
+    @Override
+    public Object recreate() throws Throwable {
+        return getValue();
+    }
+
+    public Result createDefaultResponse(){
+        AppResult appResult = new AppResult();
+        if(invocation.getReturnType()!=null && invocation.getReturnType().isPrimitive()){
+            Object defaultPrimitiveValue = ClassUtil.getDefaultPrimitiveValue(invocation.getReturnType());
+            appResult.setValue(defaultPrimitiveValue);
+        }
+        return appResult;
+
+    }
+
+    public CompletableFuture<AppResult> getResultFuture(){
+        return this.resultFuture;
     }
 }

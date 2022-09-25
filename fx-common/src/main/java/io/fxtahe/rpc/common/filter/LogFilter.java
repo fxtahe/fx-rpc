@@ -18,9 +18,9 @@ public class LogFilter implements Filter {
 
     @Override
     public Result filter(Invoker invoker, Invocation invocation) {
-        log.info("log before invoke:"+invoker.getInterface().getName());
+        log.info("log before invoke:"+invoker.getInterfaceName());
         Result invoke = invoker.invoke(invocation);
-        log.info("log after invoke:"+invoker.getInterface().getName());
+        log.info("log after invoke:"+invoker.getInterfaceName());
         return invoke;
     }
 }

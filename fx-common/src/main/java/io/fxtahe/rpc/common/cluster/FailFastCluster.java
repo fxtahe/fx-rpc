@@ -4,13 +4,18 @@ import io.fxtahe.rpc.common.config.ConsumerConfig;
 import io.fxtahe.rpc.common.core.*;
 import io.fxtahe.rpc.common.costants.InvokeTypeEnum;
 import io.fxtahe.rpc.common.exception.RemotingException;
+import io.fxtahe.rpc.common.exception.RpcException;
 import io.fxtahe.rpc.common.ext.annotation.Extension;
+import io.fxtahe.rpc.common.filter.FilterChainBuilder;
 import io.fxtahe.rpc.common.future.FutureManager;
 import io.fxtahe.rpc.common.future.RpcFuture;
+import io.fxtahe.rpc.common.invoke.Invoker;
+import io.fxtahe.rpc.common.loadbalance.LoadBalance;
 import io.fxtahe.rpc.common.registry.ServiceInstance;
 import io.fxtahe.rpc.common.remoting.Client;
 import io.fxtahe.rpc.common.util.IdGenerator;
 
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -27,39 +32,14 @@ public class FailFastCluster extends AbstractCluster {
 
 
     @Override
-    public Result invoke(Invocation invocation) {
-        ServiceInstance select = select(invocation);
-        Client client = bootStrap.refer(select);
-        RpcRequest rpcRequest = new RpcRequest();
-        rpcRequest.setSerializationName(consumerConfig.getSerializationName());
-        rpcRequest.setId(IdGenerator.generateId());
-        rpcRequest.setData(invocation);
-        InvokeTypeEnum invokeType = consumerConfig.getInvokeType();
-        if(InvokeTypeEnum.ONEWAY.equals(invokeType)){
-            rpcRequest.setTwoWay(false);
-            client.send(rpcRequest);
-            AsyncResult asyncResult = new AsyncResult(new CompletableFuture<>());
-            AppResult appResult = new AppResult();
-            appResult.setValue(appResult);
-            return asyncResult;
-        }else{
-            rpcRequest.setTwoWay(true);
-            RpcFuture future = FutureManager.createFuture(rpcRequest);
-            try{
-                client.send(rpcRequest);
-            }catch (Exception e){
-                future.cancel(true);
-                throw new RemotingException(e);
-            }
-            if(InvokeTypeEnum.ASYNC.equals(invokeType)){
-                return new AsyncResult(future.thenApply(r -> (AppResult) r));
-            }else{
-                return (AppResult) future.join();
-            }
+    public Result doInvoke(Invocation invocation, ServiceInstance serviceInstance) {
+        Invoker client = bootStrap.refer(serviceInstance);
+        try{
+            Invoker filterChainInvoker = FilterChainBuilder.buildFilterChain(client, "consumer");
+            return filterChainInvoker.invoke(invocation);
+        }catch (Exception e){
+            throw new RpcException(e);
         }
+
     }
-
-
-
-
 }

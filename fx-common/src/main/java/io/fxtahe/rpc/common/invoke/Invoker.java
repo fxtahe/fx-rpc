@@ -15,5 +15,5 @@ public interface Invoker {
      */
     Result invoke(Invocation invocation);
 
-    Class<?> getInterface();
+    String getInterfaceName();
 }

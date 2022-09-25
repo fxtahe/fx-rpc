@@ -36,4 +36,20 @@ public class AppResult implements Result{
     public void setException(Throwable t) {
         this.throwable = t;
     }
+
+    @Override
+    public Object recreate() throws Throwable {
+        if(throwable !=null){
+            try {
+                Object stackTrace = throwable.getStackTrace();
+                if (stackTrace == null) {
+                    throwable.setStackTrace(new StackTraceElement[0]);
+                }
+            } catch (Exception e) {
+                // ignore
+            }
+            throw throwable;
+        }
+        return value;
+    }
 }

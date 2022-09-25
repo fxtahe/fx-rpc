@@ -1,4 +1,4 @@
-package io.fxtahe.rpc.registry.cache;
+package io.fxtahe.rpc.common.registry.cache;
 
 import io.fxtahe.rpc.common.registry.ServiceChangeState;
 import io.fxtahe.rpc.common.registry.ServiceInstance;

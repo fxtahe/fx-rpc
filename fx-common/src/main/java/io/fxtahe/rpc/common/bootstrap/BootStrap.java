@@ -24,7 +24,7 @@ public interface BootStrap {
     /**
      *
      */
-    Client refer(ServiceInstance serviceInstance);
+    Invoker refer(ServiceInstance serviceInstance);
 
     /**
      *

@@ -1,12 +1,13 @@
 package io.fxtahe.rpc.common.core;
 
+import java.io.Serializable;
 import java.util.function.BiConsumer;
 
 /**
  * @author fxtahe
  * @since 2022/8/19 14:22
  */
-public interface Result {
+public interface Result extends Serializable {
 
     Object getValue();
 
@@ -26,4 +27,6 @@ public interface Result {
         return this;
     }
 
+
+    Object recreate() throws Throwable;
 }

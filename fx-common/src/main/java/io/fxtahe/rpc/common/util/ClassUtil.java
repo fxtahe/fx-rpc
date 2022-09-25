@@ -112,7 +112,11 @@ public class ClassUtil {
     }
 
     public static <T> T newInstance(Class<T> clazz) {
-        return newInstance(clazz,null,null);
+        try {
+            return clazz.newInstance();
+        } catch (InstantiationException | IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 
@@ -204,6 +208,21 @@ public class ClassUtil {
         }
         String result = stringBuilder.toString();
         return result.substring(0, result.length() - 1);
+    }
+
+    public static Class<?>[] getClasses(String desc) throws ClassNotFoundException {
+        if(desc == null || desc.length()==0){
+            return null;
+        }
+        String[] split = desc.split(",");
+        Class<?>[] classes = new Class[split.length];
+        for(int i=0;i<split.length;i++){
+            Class<?> aClass = forName(split[i]);
+            classes[i] = aClass;
+        }
+        return classes;
+
+
     }
 
 

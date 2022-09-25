@@ -1,9 +1,10 @@
 package io.fxtahe.rpc.common.cluster;
 
 import io.fxtahe.rpc.common.bootstrap.BootStrap;
-import io.fxtahe.rpc.common.bootstrap.BootStrapFactory;
 import io.fxtahe.rpc.common.config.ConsumerConfig;
 import io.fxtahe.rpc.common.core.Invocation;
+import io.fxtahe.rpc.common.core.Result;
+import io.fxtahe.rpc.common.exception.RpcException;
 import io.fxtahe.rpc.common.ext.ExtensionLoaderFactory;
 import io.fxtahe.rpc.common.invoke.Invoker;
 import io.fxtahe.rpc.common.loadbalance.LoadBalance;
@@ -15,6 +16,9 @@ import io.fxtahe.rpc.common.router.Router;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static io.fxtahe.rpc.common.costants.InvocationConstants.INVOKE_TYPE_KEY;
+import static io.fxtahe.rpc.common.costants.InvocationConstants.SERIALIZATION_NAME_KEY;
 
 /**
  * @author fxtahe
@@ -43,6 +47,9 @@ public abstract class AbstractCluster implements Cluster {
 
     public ServiceInstance select(Invocation invocation){
         List<ServiceInstance> list = list(serviceRegistries, invocation);
+        if(list ==null || list.size()==0){
+            throw new RpcException("Unable found any available service of "+invocation.getInterfaceName());
+        }
         List<ServiceInstance> route = route(list, invocation);
         return loadBalance(route, invocation);
     }
@@ -70,17 +77,25 @@ public abstract class AbstractCluster implements Cluster {
         return loadBalance.select(serviceInstances,invocation);
     }
 
-
-    private Invoker invoker;
-
     @Override
-    public Class<?> getInterface() {
-        return invoker.getInterface();
+    public String getInterfaceName() {
+        return consumerConfig.getInterfaceClass().getName();
     }
 
 
     @Override
     public void shutdown() throws Exception {
-        bootStrap.unRefer(invoker.getInterface().getName());
+        bootStrap.unRefer(consumerConfig.getInterfaceClass().getName());
     }
+
+    @Override
+    public Result invoke(Invocation invocation) {
+        invocation.setAttribute(SERIALIZATION_NAME_KEY,consumerConfig.getSerializationName());
+        invocation.setAttribute(INVOKE_TYPE_KEY,consumerConfig.getInvokeType().name());
+        ServiceInstance serviceInstance = select(invocation);
+        return doInvoke(invocation,serviceInstance);
+    }
+
+    public abstract Result doInvoke(Invocation invocation,ServiceInstance serviceInstance);
+
 }

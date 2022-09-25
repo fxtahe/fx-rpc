@@ -1,4 +1,4 @@
-package io.fxtahe.rpc.registry.cache;
+package io.fxtahe.rpc.common.registry.cache;
 
 import io.fxtahe.rpc.common.ext.annotation.Extension;
 import io.fxtahe.rpc.common.registry.*;
@@ -33,7 +33,7 @@ public class CacheServiceRegistry implements ServiceRegistry ,ServiceListener{
 
     public CacheServiceRegistry(ServiceRegistry registry) {
         this.registry = registry;
-        // TODO config cache type
+        this.registry.setRecoverStrategy(()->{this.recoverRegisters();this.recoverSubscriber();});
         this.serviceInfoCache = new SimpleServiceInfoCache();
         this.cacheServiceListener = new ServiceDiskCacheListener(serviceInfoCache);
     }
@@ -99,8 +99,9 @@ public class CacheServiceRegistry implements ServiceRegistry ,ServiceListener{
             if (subscribers.size() == 0) {
                 this.subscribers.remove(serviceId);
             }
+        }else{
+            registry.unsubscribe(serviceId,this);
         }
-        registry.unsubscribe(serviceId,this);
     }
 
 

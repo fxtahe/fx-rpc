@@ -1,4 +1,4 @@
-package io.fxtahe.rpc.registry.cache;
+package io.fxtahe.rpc.common.registry.cache;
 
 import io.fxtahe.rpc.common.registry.ServiceInstance;
 import io.fxtahe.rpc.common.util.FileUtil;
@@ -47,7 +47,7 @@ public class SimpleServiceInfoCache implements ServiceInfoCache {
     }
 
 
-    private class RefreshDiskRunnable implements Runnable {
+    private static class RefreshDiskRunnable implements Runnable {
 
         private final String serviceId;
 

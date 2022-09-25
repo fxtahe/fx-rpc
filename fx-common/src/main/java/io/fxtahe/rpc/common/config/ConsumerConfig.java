@@ -61,7 +61,7 @@ public class ConsumerConfig<T> extends AbstractConfig<T, ConsumerConfig<T>>{
      * 服务引用
      * @return ref
      */
-    public T refer() throws Exception{
+    public T refer(){
         if(ref!=null){return ref;}
 
         synchronized (this){

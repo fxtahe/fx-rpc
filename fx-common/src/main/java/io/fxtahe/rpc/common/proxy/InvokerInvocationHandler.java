@@ -21,7 +21,6 @@ public class InvokerInvocationHandler implements InvocationHandler {
 
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-
         if (method.getDeclaringClass() == Object.class) {
             return method.invoke(invoker, args);
         }
@@ -36,7 +35,7 @@ public class InvokerInvocationHandler implements InvocationHandler {
         } else if (parameterTypes.length == 1 && "equals".equals(methodName)) {
             return invoker.equals(args[0]);
         }
-        Invocation invocation = new Invocation( method.getName(),invoker.getInterface().getName(),args, method.getParameterTypes() ,method.getReturnType());
-        return invoker.invoke(invocation);
+        Invocation invocation = new Invocation( method.getName(),invoker.getInterfaceName(),args, method.getParameterTypes() ,method.getReturnType(),null);
+        return invoker.invoke(invocation).recreate();
     }
 }
