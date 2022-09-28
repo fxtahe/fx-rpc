@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
  * @author fxtahe
  * @since 2022/8/19 10:45
  */
-@Extension(alias = "log",order = 0,singleton = true,group = "provider")
+@Extension(alias = "log",order = 0,singleton = true,group = "consumer")
 public class LogFilter implements Filter {
 
     private static final Logger log = LoggerFactory.getLogger(LogFilter.class);
@@ -19,8 +19,16 @@ public class LogFilter implements Filter {
     @Override
     public Result filter(Invoker invoker, Invocation invocation) {
         log.info("log before invoke:"+invoker.getInterfaceName());
-        Result invoke = invoker.invoke(invocation);
-        log.info("log after invoke:"+invoker.getInterfaceName());
-        return invoke;
+        return invoker.invoke(invocation);
+    }
+
+    @Override
+    public void onResponse(Result result, Invocation invocation) {
+        log.info("log when completableFuture on response:{}",result.getValue());
+    }
+
+    @Override
+    public void onError(Throwable throwable, Invocation invocation) {
+        log.error("log when completableFuture on error:",throwable);
     }
 }

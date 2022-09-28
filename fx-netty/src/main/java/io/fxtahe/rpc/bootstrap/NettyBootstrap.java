@@ -18,6 +18,7 @@ import io.fxtahe.rpc.common.remoting.Connection;
 import io.fxtahe.rpc.common.remoting.ConnectionHandler;
 import io.fxtahe.rpc.common.remoting.Server;
 import io.fxtahe.rpc.common.util.ClassUtil;
+import io.fxtahe.rpc.common.util.StringUtil;
 import io.fxtahe.rpc.remoting.netty.NettyClient;
 import io.fxtahe.rpc.remoting.netty.NettyServer;
 import org.slf4j.Logger;
@@ -60,6 +61,7 @@ public class NettyBootstrap implements BootStrap {
                     Result result = invoker.invoke(invocation);
                     if (result.hasException()){
                         rpcResponse.setStatus(StatusConstants.BAD_RESPONSE);
+                        rpcResponse.setErrorMsg(StringUtil.toString(result.getException()));
                     }
                     rpcResponse.setData(result);
                 }catch (Throwable t){
