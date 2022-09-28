@@ -37,7 +37,7 @@ public class NettyClient implements Client {
 
     public NettyClient(String host, int port, ConnectionHandler connectionHandler) {
         this.remoteAddress = new InetSocketAddress(host,port);
-        eventLoopGroup = NettyEventLoopFactory.buildEventLoopGroup(Runtime.getRuntime().availableProcessors());
+        eventLoopGroup = NettyEventLoopFactory.buildEventLoopGroup(Runtime.getRuntime().availableProcessors(),"netty-client-worker");
         bootstrap = new Bootstrap().group(eventLoopGroup)
                 .channel(NettyEventLoopFactory.socketChannelClass())
                 .option(ChannelOption.SO_KEEPALIVE,true)

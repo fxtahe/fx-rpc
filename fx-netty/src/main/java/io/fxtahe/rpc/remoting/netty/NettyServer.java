@@ -24,8 +24,8 @@ public class NettyServer implements Server {
     private static final Logger log = LoggerFactory.getLogger(NettyServer.class);
 
 
-    final static EventLoopGroup boss = NettyEventLoopFactory.buildEventLoopGroup(1);
-    final static EventLoopGroup worker = NettyEventLoopFactory.buildEventLoopGroup(Runtime.getRuntime().availableProcessors());
+    final static EventLoopGroup boss = NettyEventLoopFactory.buildEventLoopGroup(1,"netty-server-boss");
+    final static EventLoopGroup worker = NettyEventLoopFactory.buildEventLoopGroup(Runtime.getRuntime().availableProcessors(),"netty-server-worker");
 
     private ServerBootstrap bootstrap;
     /**
@@ -74,10 +74,6 @@ public class NettyServer implements Server {
         if (!started) {
             ChannelFuture channelFuture = bootstrap.bind(socketAddress).syncUninterruptibly();
             channel = channelFuture.channel();
-            Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-                boss.shutdownGracefully();
-                worker.shutdownGracefully();
-            }));
             started=true;
         }
 

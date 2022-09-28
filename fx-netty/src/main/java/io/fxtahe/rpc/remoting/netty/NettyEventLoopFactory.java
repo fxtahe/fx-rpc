@@ -10,6 +10,9 @@ import io.netty.channel.socket.ServerSocketChannel;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.util.concurrent.DefaultThreadFactory;
+
+import java.util.concurrent.ThreadFactory;
 
 /**
  * @author fxtahe
@@ -23,8 +26,9 @@ public class NettyEventLoopFactory {
     private static final String OS_LINUX_PREFIX = "linux";
 
 
-    public static EventLoopGroup buildEventLoopGroup(int threads){
-        return shouldEpoll() ? new EpollEventLoopGroup(threads) : new NioEventLoopGroup(threads);
+    public static EventLoopGroup buildEventLoopGroup(int threads,String threadFactoryName){
+        ThreadFactory threadFactory = new DefaultThreadFactory(threadFactoryName, true);
+        return shouldEpoll() ? new EpollEventLoopGroup(threads,threadFactory) : new NioEventLoopGroup(threads,threadFactory);
     }
 
     public static Class<? extends SocketChannel> socketChannelClass() {
