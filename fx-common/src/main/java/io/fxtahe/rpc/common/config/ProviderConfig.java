@@ -7,9 +7,12 @@ import io.fxtahe.rpc.common.invoke.ProviderProxyInvoker;
 import io.fxtahe.rpc.common.registry.ServiceInstance;
 import io.fxtahe.rpc.common.registry.ServiceRegistry;
 import io.fxtahe.rpc.common.registry.ServiceRegistryFactory;
+import io.fxtahe.rpc.common.remoting.ThreadPoolRegister;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ThreadPoolExecutor;
 
 /**
  * @author fxtahe
@@ -28,6 +31,8 @@ public class ProviderConfig<T> extends AbstractConfig<T, ProviderConfig<T>> {
 
     private Invoker invoker;
 
+    private ExecutorService executor;
+
     /**
      * 发布服务
      */
@@ -40,6 +45,9 @@ public class ProviderConfig<T> extends AbstractConfig<T, ProviderConfig<T>> {
             for (ServerConfig serverConfig : bootStraps) {
                 BootStrap bootStrap = BootStrapFactory.buildBootStrap(serverConfig.getServerType());
                 bootStrap.export(invoker,serverConfig);
+                if(executor!=null){
+                    ThreadPoolRegister.registerThreadPool(interfaceClass.getName(),executor);
+                }
                 if (registries != null) {
                     for (RegistryConfig registryConfig : registries) {
                         ServiceRegistry serviceRegistry = ServiceRegistryFactory.buildRegistry(registryConfig);
@@ -65,6 +73,9 @@ public class ProviderConfig<T> extends AbstractConfig<T, ProviderConfig<T>> {
             for (ServerConfig serverConfig : bootStraps) {
                 BootStrap bootStrap = BootStrapFactory.buildBootStrap(serverConfig.getServerType());
                 bootStrap.unExport(invoker);
+                if(executor!=null){
+                    ThreadPoolRegister.unRegisterThreadPool(interfaceClass.getName());
+                }
                 if (registries != null) {
                     for (RegistryConfig registryConfig : registries) {
                         ServiceRegistry serviceRegistry = ServiceRegistryFactory.buildRegistry(registryConfig);
@@ -109,5 +120,13 @@ public class ProviderConfig<T> extends AbstractConfig<T, ProviderConfig<T>> {
 
     public void setReflectType(String reflectType) {
         this.reflectType = reflectType;
+    }
+
+    public ExecutorService getExecutor() {
+        return executor;
+    }
+
+    public void setExecutor(ExecutorService executor) {
+        this.executor = executor;
     }
 }

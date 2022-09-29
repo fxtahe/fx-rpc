@@ -9,6 +9,7 @@ import io.fxtahe.rpc.common.future.RpcFuture;
 import io.fxtahe.rpc.common.serialize.Serialization;
 import io.fxtahe.rpc.common.serialize.SerializationEnum;
 import io.fxtahe.rpc.common.serialize.SerializationFactory;
+import io.fxtahe.rpc.common.util.ClassUtil;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
@@ -92,8 +93,9 @@ public class NettyDecoder extends ByteToMessageDecoder {
             }else{
                 byte[] bytes = new byte[dataLength];
                 in.readBytes(bytes);
-                Object deserialize = serialization.deserialize(bytes, Invocation.class);
-                rpcRequest.setData(deserialize);
+                Invocation invocation = serialization.deserialize(bytes, Invocation.class);
+                invocation.setParameterTypes(ClassUtil.getClasses(invocation.getParameterTypesDesc()));
+                rpcRequest.setData(invocation);
             }
             out.add(rpcRequest);
         }

@@ -22,7 +22,7 @@ import java.util.concurrent.CompletableFuture;
  * @author fxtahe
  * @since 2022-09-16 21:50
  */
-@Extension(alias = "fail-fast")
+@Extension(alias = "fail-fast",singleton = false)
 public class FailFastCluster extends AbstractCluster {
 
 
@@ -32,11 +32,11 @@ public class FailFastCluster extends AbstractCluster {
 
 
     @Override
-    public Result doInvoke(Invocation invocation, ServiceInstance serviceInstance) {
-        Invoker client = bootStrap.refer(serviceInstance);
+    public Result doInvoke(Invocation invocation) {
+        ServiceInstance serviceInstance = select(invocation);
         try{
-            Invoker filterChainInvoker = FilterChainBuilder.buildFilterChain(client, "consumer");
-            return filterChainInvoker.invoke(invocation);
+            Invoker clusterInvoker = getClusterInvoker(serviceInstance);
+            return clusterInvoker.invoke(invocation);
         }catch (Exception e){
             throw new RpcException(e);
         }

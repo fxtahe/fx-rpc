@@ -25,5 +25,6 @@ public interface Cluster extends Invoker, Closeable {
     ServiceInstance loadBalance(List<ServiceInstance> serviceInstances,Invocation invocation);
 
 
+    Invoker getClusterInvoker(ServiceInstance serviceInstance);
 
 }

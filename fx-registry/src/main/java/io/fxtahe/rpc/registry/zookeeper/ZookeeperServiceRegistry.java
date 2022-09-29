@@ -122,6 +122,7 @@ public class ZookeeperServiceRegistry implements ServiceRegistry {
                         port(registration.getPort()).payload(registration).build();
     }
 
+    @Override
     public void setRecoverStrategy(RecoverStrategy recoverStrategy){
         client.getConnectionStateListenable().addListener(((curatorFramework, connectionState) -> {
             if(connectionState == ConnectionState.RECONNECTED){

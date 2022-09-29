@@ -1,1 +1,2 @@
 io.fxtahe.rpc.common.cluster.FailFastCluster
+io.fxtahe.rpc.common.cluster.FailOverCluster

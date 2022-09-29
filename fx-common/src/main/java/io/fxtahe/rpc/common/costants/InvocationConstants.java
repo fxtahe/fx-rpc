@@ -8,5 +8,5 @@ public class InvocationConstants {
 
     public static final String TIMEOUT_KEY = "timeOut";
 
-
+    public static final String RETRIES_NUM_KEY = "retriesNum";
 }

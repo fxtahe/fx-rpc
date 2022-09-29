@@ -5,6 +5,7 @@ import io.fxtahe.rpc.common.core.RpcRequest;
 import io.fxtahe.rpc.common.core.RpcResponse;
 import io.fxtahe.rpc.common.costants.StatusConstants;
 import io.fxtahe.rpc.common.remoting.ConnectionHandler;
+import io.fxtahe.rpc.common.util.IdGenerator;
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPromise;
@@ -54,6 +55,7 @@ public class NettyClientHandler extends ChannelDuplexHandler {
             try{
                 NettyConnection connection = NettyConnectionManager.putIfAbsent(ctx.channel());
                 RpcRequest rpcRequest = new RpcRequest();
+                rpcRequest.setId(IdGenerator.generateId());
                 rpcRequest.setHeartBeat(true);
                 rpcRequest.setTwoWay(true);
                 connectionHandler.send(connection,rpcRequest);

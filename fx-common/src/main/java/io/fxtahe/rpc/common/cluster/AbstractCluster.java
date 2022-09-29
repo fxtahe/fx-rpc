@@ -18,7 +18,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static io.fxtahe.rpc.common.costants.InvocationConstants.INVOKE_TYPE_KEY;
+import static io.fxtahe.rpc.common.costants.InvocationConstants.RETRIES_NUM_KEY;
 import static io.fxtahe.rpc.common.costants.InvocationConstants.SERIALIZATION_NAME_KEY;
+import static io.fxtahe.rpc.common.costants.InvocationConstants.TIMEOUT_KEY;
 
 /**
  * @author fxtahe
@@ -92,10 +94,16 @@ public abstract class AbstractCluster implements Cluster {
     public Result invoke(Invocation invocation) {
         invocation.setAttribute(SERIALIZATION_NAME_KEY,consumerConfig.getSerializationName());
         invocation.setAttribute(INVOKE_TYPE_KEY,consumerConfig.getInvokeType().name());
-        ServiceInstance serviceInstance = select(invocation);
-        return doInvoke(invocation,serviceInstance);
+        invocation.setAttribute(RETRIES_NUM_KEY,consumerConfig.getRetries());
+        invocation.setAttribute(TIMEOUT_KEY,consumerConfig.getTimeOut());
+        return doInvoke(invocation);
     }
 
-    public abstract Result doInvoke(Invocation invocation,ServiceInstance serviceInstance);
+    @Override
+    public Invoker getClusterInvoker(ServiceInstance serviceInstance) {
+        return bootStrap.refer(serviceInstance);
+    }
+
+    public abstract Result doInvoke(Invocation invocation);
 
 }

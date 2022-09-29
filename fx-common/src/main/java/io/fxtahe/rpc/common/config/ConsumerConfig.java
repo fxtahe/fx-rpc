@@ -51,10 +51,24 @@ public class ConsumerConfig<T> extends AbstractConfig<T, ConsumerConfig<T>>{
      */
     private Cluster cluster;
 
-
+    /**
+     * service change listener
+     */
     private ServiceListener serviceListener;
 
+    /**
+     * retries
+     */
+    private int retries;
 
+    /**
+     * execute timeOut
+     */
+    private long timeOut;
+
+    /**
+     * interface refer
+     */
     private T ref;
 
     /**
@@ -171,5 +185,21 @@ public class ConsumerConfig<T> extends AbstractConfig<T, ConsumerConfig<T>>{
 
     public void setServiceListener(ServiceListener serviceListener) {
         this.serviceListener = serviceListener;
+    }
+
+    public int getRetries() {
+        return retries;
+    }
+
+    public void setRetries(int retries) {
+        this.retries = retries;
+    }
+
+    public long getTimeOut() {
+        return timeOut;
+    }
+
+    public void setTimeOut(long timeOut) {
+        this.timeOut = timeOut;
     }
 }
