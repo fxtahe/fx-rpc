@@ -26,6 +26,8 @@ public class ConsumerClientInvoker implements Invoker{
 
     private ServiceInstance serviceInstance;
 
+    private final long defaultTimeout = 2000;
+
     public ConsumerClientInvoker(Client client, ServiceInstance serviceInstance) {
         this.client = client;
         this.serviceInstance = serviceInstance;
@@ -69,8 +71,10 @@ public class ConsumerClientInvoker implements Invoker{
             appFuture.complete(appResult);
             return new AsyncResult(appFuture,invocation);
         }else{
+            long timeout = (long) invocation.getAttribute(TIMEOUT_KEY);
+            timeout = timeout==0?defaultTimeout:timeout;
             rpcRequest.setTwoWay(true);
-            RpcFuture future = FutureManager.createFuture(rpcRequest);
+            RpcFuture future = FutureManager.createFuture(rpcRequest,timeout);
             try{
                 client.send(rpcRequest);
             }catch (Exception e){

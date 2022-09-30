@@ -6,6 +6,7 @@ import io.fxtahe.rpc.common.costants.StatusConstants;
 import io.fxtahe.rpc.common.future.FutureManager;
 
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeoutException;
 
 /**
  * @author fxtahe
@@ -18,11 +19,15 @@ public class RpcFuture extends CompletableFuture<Object> {
 
     private RpcRequest rpcRequest;
 
+    private long timeOut;
+
 
     public void received(RpcResponse response){
         if(StatusConstants.OK == response.getStatus()){
             this.complete(response.getData());
-        }else{
+        }else if(StatusConstants.TIMEOUT == response.getStatus()) {
+            this.completeExceptionally(new TimeoutException(response.getErrorMsg()));
+        }else {
             this.completeExceptionally(new RuntimeException(response.getErrorMsg()));
         }
     }
@@ -52,5 +57,13 @@ public class RpcFuture extends CompletableFuture<Object> {
 
     public void setRpcRequest(RpcRequest rpcRequest) {
         this.rpcRequest = rpcRequest;
+    }
+
+    public long getTimeOut() {
+        return timeOut;
+    }
+
+    public void setTimeOut(long timeOut) {
+        this.timeOut = timeOut;
     }
 }

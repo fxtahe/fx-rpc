@@ -65,8 +65,10 @@ public class NettyDecoder extends ByteToMessageDecoder {
                     rpcResponse.setData(null);
                 }else{
                     Invocation invocation = getInvocation(id);
-                    Object deserialize = serialization.deserialize(bytes, invocation.getReturnType());
-                    rpcResponse.setData(deserialize);
+                    if(invocation!=null){
+                        Object deserialize = serialization.deserialize(bytes, invocation.getReturnType());
+                        rpcResponse.setData(deserialize);
+                    }
                 }
             }else{
                 if(dataLength !=0 ){
@@ -108,6 +110,9 @@ public class NettyDecoder extends ByteToMessageDecoder {
      */
     private Invocation getInvocation(long id) {
         RpcFuture future = FutureManager.getFuture(id);
+        if(future==null){
+            return null;
+        }
         RpcRequest rpcRequest = future.getRpcRequest();
         return (Invocation) rpcRequest.getData();
     }

@@ -76,7 +76,9 @@ public class DefaultConnectionHandler implements ConnectionHandler {
             } else {
                 long id = rpcResponse.getId();
                 RpcFuture rpcFuture = FutureManager.removeFuture(id);
-                rpcFuture.received(rpcResponse);
+                if(rpcFuture!=null){
+                    rpcFuture.received(rpcResponse);
+                }
             }
         }
     }

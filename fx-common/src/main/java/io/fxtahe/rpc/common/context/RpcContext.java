@@ -2,6 +2,7 @@ package io.fxtahe.rpc.common.context;
 
 import io.fxtahe.rpc.common.core.Result;
 
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 
 /**
@@ -12,13 +13,13 @@ public class RpcContext {
 
     private static final ThreadLocal<RpcContext> context = ThreadLocal.withInitial(RpcContext::new);
 
-    private Future<Result> future;
+    private  CompletableFuture future;
 
-    public Future getFuture(){
+    public <T> CompletableFuture<T> getFuture(){
         return future;
     }
 
-    public void setFuture(Future future){
+    public <T> void setFuture(CompletableFuture<T> future){
         this.future = future;
     }
 

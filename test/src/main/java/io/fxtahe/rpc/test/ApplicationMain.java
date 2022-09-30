@@ -1,14 +1,13 @@
 package io.fxtahe.rpc.test;
 
 
+import io.fxtahe.rpc.common.config.ProviderConfig;
 import io.fxtahe.rpc.common.config.RegistryConfig;
 import io.fxtahe.rpc.common.config.ServerConfig;
-import io.fxtahe.rpc.common.config.ProviderConfig;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadPoolExecutor;
 
 /**
  * @author fxtahe

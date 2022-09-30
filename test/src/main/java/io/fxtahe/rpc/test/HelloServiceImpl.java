@@ -8,7 +8,11 @@ package io.fxtahe.rpc.test;
 public class HelloServiceImpl implements HelloService{
     @Override
     public String sayHello(long id) {
-        int i=10/0;
+        try {
+            Thread.sleep(6000);
+        } catch (InterruptedException e) {
+
+        }
         return "hello "+id;
     }
 

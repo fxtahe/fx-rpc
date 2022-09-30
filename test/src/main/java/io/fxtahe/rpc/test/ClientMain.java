@@ -3,19 +3,10 @@ package io.fxtahe.rpc.test;
 import io.fxtahe.rpc.common.config.ConsumerConfig;
 import io.fxtahe.rpc.common.config.RegistryConfig;
 import io.fxtahe.rpc.common.context.RpcContext;
-import io.fxtahe.rpc.common.core.RpcRequest;
-import io.fxtahe.rpc.common.core.RpcResponse;
 import io.fxtahe.rpc.common.costants.InvokeTypeEnum;
-import io.fxtahe.rpc.common.remoting.Connection;
-import io.fxtahe.rpc.common.remoting.ConnectionHandler;
-import io.fxtahe.rpc.common.serialize.SerializationEnum;
-import io.fxtahe.rpc.common.util.IdGenerator;
-import io.fxtahe.rpc.remoting.netty.NettyClient;
 
-import java.net.InetSocketAddress;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 
 /**
  * @author fxtahe
@@ -31,9 +22,12 @@ public class ClientMain {
         ConsumerConfig<HelloService> consumerConfig = new ConsumerConfig<>();
         consumerConfig.registryConfig(registryConfig);
         consumerConfig.interfaceClass(HelloService.class);
-        consumerConfig.setInvokeType(InvokeTypeEnum.SYNC);
+        consumerConfig.setInvokeType(InvokeTypeEnum.ASYNC);
+        consumerConfig.setTimeOut(4000);
         HelloService refer = consumerConfig.refer();
         String s = refer.sayHello(1);
+        CompletableFuture<String> future = RpcContext.getContext().getFuture();
+        String s1 = future.get();
         System.out.println(s);
 
     }

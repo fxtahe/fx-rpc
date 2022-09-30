@@ -8,6 +8,8 @@ public class StatusConstants {
 
     public static final byte OK = 20;
 
+    public static final byte TIMEOUT = 30;
+
     public static final byte BAD_REQUEST = 40;
 
     public static final byte BAD_RESPONSE = 50;

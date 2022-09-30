@@ -3,6 +3,7 @@ package io.fxtahe.rpc.common.future;
 import io.fxtahe.rpc.common.core.AppResult;
 
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 
 /**
  * @author fxtahe
@@ -18,6 +19,9 @@ public class RpcFutureAdapter<T> extends CompletableFuture<T> {
         this.completableFuture = completableFuture;
         completableFuture.whenComplete(((appResult, throwable) -> {
             if(throwable!=null){
+                if(throwable instanceof CompletionException){
+                    throwable =throwable.getCause();
+                }
                 this.completeExceptionally(throwable);
             }
             if(appResult.hasException()){
