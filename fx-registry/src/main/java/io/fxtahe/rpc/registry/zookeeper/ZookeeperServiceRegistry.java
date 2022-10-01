@@ -48,9 +48,7 @@ public class ZookeeperServiceRegistry implements ServiceRegistry {
                 .build();
         client.start();
         try {
-            if(!client.blockUntilConnected(2000, TimeUnit.MILLISECONDS)){
-                throw new RegisterException("zookeeper client start fail.");
-            }
+            client.blockUntilConnected(2000, TimeUnit.MILLISECONDS);
         } catch (InterruptedException exception) {
             throw new RegisterException("zookeeper client start fail.");
         }

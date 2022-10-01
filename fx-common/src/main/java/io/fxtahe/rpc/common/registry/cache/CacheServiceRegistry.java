@@ -31,10 +31,13 @@ public class CacheServiceRegistry implements ServiceRegistry ,ServiceListener{
 
     private ServiceInfoCache serviceInfoCache;
 
-    public CacheServiceRegistry(ServiceRegistry registry) {
+    private String registryType;
+
+    public CacheServiceRegistry(ServiceRegistry registry,String registryType,String cachePath, boolean failOver){
         this.registry = registry;
+        this.registryType = registryType;
         this.registry.setRecoverStrategy(()->{this.recoverRegisters();this.recoverSubscriber();});
-        this.serviceInfoCache = new SimpleServiceInfoCache();
+        this.serviceInfoCache = new SimpleServiceInfoCache(failOver,registryType,cachePath);
         this.cacheServiceListener = new ServiceDiskCacheListener(serviceInfoCache);
     }
 
@@ -47,9 +50,7 @@ public class CacheServiceRegistry implements ServiceRegistry ,ServiceListener{
                 List<ServiceInstance> instances = serviceInfoCache.getInstances(serviceId);
                 if (instances == null || instances.size() == 0) {
                     instances = registry.getInstances(serviceId);
-                    if (instances != null && instances.size() > 0) {
-                        serviceInfoCache.refreshInstances(serviceId, instances);
-                    }
+                    serviceInfoCache.refreshInstances(serviceId, instances);
                 }
                 return instances;
             } catch (Exception e) {

@@ -13,6 +13,10 @@ public class RegistryConfig {
 
     private boolean useCache = true;
 
+    private String cachePath = System.getProperty("user.home") + "/fx-registry/";
+
+    private boolean failOver = true;
+
     private boolean autoRecover = true;
 
     private String connectionString;
@@ -69,6 +73,22 @@ public class RegistryConfig {
 
     public void setAutoRecover(boolean autoRecover) {
         this.autoRecover = autoRecover;
+    }
+
+    public String getCachePath() {
+        return cachePath;
+    }
+
+    public void setCachePath(String cachePath) {
+        this.cachePath = cachePath;
+    }
+
+    public boolean isFailOver() {
+        return failOver;
+    }
+
+    public void setFailOver(boolean failOver) {
+        this.failOver = failOver;
     }
 
     @Override

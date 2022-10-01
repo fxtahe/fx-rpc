@@ -16,11 +16,13 @@ public class ServiceRegistryFactory {
     private static final Map<RegistryConfig, ServiceRegistry> serviceRegistryCache = new ConcurrentHashMap<>(4);
 
     public static ServiceRegistry buildRegistry(RegistryConfig registryConfig) {
-        ServiceRegistry serviceRegistry = serviceRegistryCache.computeIfAbsent(registryConfig, (config) -> ExtensionLoaderFactory.getExtensionLoader(ServiceRegistry.class).getInstance(config.getRegistryType(), new Class[]{RegistryConfig.class}, new Object[]{config}));
-        if(registryConfig.isUseCache()){
-            serviceRegistry = new CacheServiceRegistry(serviceRegistry);
-        }
-        return serviceRegistry;
+        return serviceRegistryCache.computeIfAbsent(registryConfig, (config) -> {
+            ServiceRegistry instance = ExtensionLoaderFactory.getExtensionLoader(ServiceRegistry.class).getInstance(config.getRegistryType(), new Class[]{RegistryConfig.class}, new Object[]{config});
+            if(config.isUseCache()){
+                instance = new CacheServiceRegistry(instance,registryConfig.getRegistryType(),registryConfig.getCachePath(),registryConfig.isFailOver());
+            }
+            return instance;
+        });
 
     }
 
