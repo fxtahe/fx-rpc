@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -115,8 +116,8 @@ public class CacheServiceRegistry implements ServiceRegistry ,ServiceListener{
 
     public void recoverSubscriber(){
         log.info("recover subscribers");
-        for(Map.Entry<String,List<ServiceListener>> subscriber:subscribers.entrySet()){
-            subscriber.getValue().forEach(el->registry.subscribe(subscriber.getKey(),el));
+        for(String key: subscribers.keySet()){
+            registry.subscribe(key,this);
         }
     }
 
