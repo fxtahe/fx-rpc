@@ -1,5 +1,6 @@
 package io.fxtahe.rpc.common.registry.cache;
 
+import io.fxtahe.rpc.common.exception.RegisterException;
 import io.fxtahe.rpc.common.ext.annotation.Extension;
 import io.fxtahe.rpc.common.registry.*;
 import org.slf4j.Logger;
@@ -34,9 +35,12 @@ public class CacheServiceRegistry implements ServiceRegistry ,ServiceListener{
 
     private String registryType;
 
+    private boolean failOver;
+
     public CacheServiceRegistry(ServiceRegistry registry,String registryType,String cachePath, boolean failOver){
         this.registry = registry;
         this.registryType = registryType;
+        this.failOver = failOver;
         this.registry.setRecoverStrategy(()->{this.recoverRegisters();this.recoverSubscriber();});
         this.serviceInfoCache = new SimpleServiceInfoCache(failOver,registryType,cachePath);
         this.cacheServiceListener = new ServiceDiskCacheListener(serviceInfoCache);
@@ -58,7 +62,14 @@ public class CacheServiceRegistry implements ServiceRegistry ,ServiceListener{
                 return serviceInfoCache.getInstances(serviceId);
             }
         } else {
-            return registry.getInstances(serviceId);
+            try {
+                return registry.getInstances(serviceId);
+            }catch (RegisterException e){
+                if(failOver){
+                    return serviceInfoCache.getInstances(serviceId);
+                }
+                throw e;
+            }
         }
     }
 
