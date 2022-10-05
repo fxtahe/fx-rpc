@@ -4,10 +4,7 @@ package io.fxtahe.rpc.registry.zookeeper;
 import io.fxtahe.rpc.common.config.RegistryConfig;
 import io.fxtahe.rpc.common.exception.RegisterException;
 import io.fxtahe.rpc.common.ext.annotation.Extension;
-import io.fxtahe.rpc.common.registry.RecoverStrategy;
-import io.fxtahe.rpc.common.registry.ServiceInstance;
-import io.fxtahe.rpc.common.registry.ServiceListener;
-import io.fxtahe.rpc.common.registry.ServiceRegistry;
+import io.fxtahe.rpc.common.registry.*;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.framework.imps.CuratorFrameworkState;
@@ -118,6 +115,12 @@ public class ZookeeperServiceRegistry implements ServiceRegistry {
         return org.apache.curator.x.discovery.ServiceInstance.builder().name(registration.getServiceId())
                 .id(registration.getId()).address(registration.getHost()).
                         port(registration.getPort()).payload(registration).build();
+    }
+
+
+    @Override
+    public RegistryState getState() {
+        return client.getZookeeperClient().isConnected() ? RegistryState.CONNECTED:RegistryState.DISCONNECTED;
     }
 
     @Override

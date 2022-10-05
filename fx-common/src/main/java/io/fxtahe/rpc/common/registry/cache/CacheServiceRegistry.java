@@ -50,7 +50,7 @@ public class CacheServiceRegistry implements ServiceRegistry ,ServiceListener{
     @Override
     public List<ServiceInstance> getInstances(String serviceId) {
         // already subscribe service load from cache
-        if (subscribers.containsKey(serviceId)) {
+        if (subscribers.containsKey(serviceId) || RegistryState.DISCONNECTED.equals(getState())) {
             try {
                 List<ServiceInstance> instances = serviceInfoCache.getInstances(serviceId);
                 if (instances == null || instances.size() == 0) {
@@ -82,7 +82,9 @@ public class CacheServiceRegistry implements ServiceRegistry ,ServiceListener{
     public void register(ServiceInstance registration) {
         List<ServiceInstance> serviceInstances = this.registerInstances.computeIfAbsent(registration.getServiceId(), key -> new ArrayList<>());
         serviceInstances.add(registration);
-        registry.register(registration);
+        if(RegistryState.CONNECTED.equals(registry.getState())){
+            registry.register(registration);
+        }
     }
 
     @Override
@@ -101,7 +103,9 @@ public class CacheServiceRegistry implements ServiceRegistry ,ServiceListener{
     public void subscribe(String serviceId,ServiceListener serviceListener) {
         List<ServiceListener> subscribers = this.subscribers.computeIfAbsent(serviceId, key -> new ArrayList<>());
         if(serviceListener!=null)subscribers.add(serviceListener);
-        registry.subscribe(serviceId,this);
+        if(RegistryState.CONNECTED.equals(registry.getState())) {
+            registry.subscribe(serviceId, this);
+        }
     }
 
     @Override
@@ -141,5 +145,10 @@ public class CacheServiceRegistry implements ServiceRegistry ,ServiceListener{
                 serviceListener.onStateChange(serviceId,serviceInstances,newState);
             });
         }
+    }
+
+    @Override
+    public RegistryState getState() {
+        return registry.getState();
     }
 }

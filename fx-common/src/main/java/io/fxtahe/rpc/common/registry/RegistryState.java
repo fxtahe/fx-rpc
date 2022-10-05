@@ -14,10 +14,6 @@ public enum RegistryState {
     /**
      * service disconnect from registry state
      */
-    DISCONNECTED,
-    /**
-     *
-     */
-    RECONNECTED;
+    DISCONNECTED;
 
 }

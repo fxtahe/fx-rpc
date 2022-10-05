@@ -8,6 +8,10 @@ import java.util.List;
  */
 public interface ServiceRegistry{
 
+
+    RegistryState getState();
+
+
     /**
      * get ServiceInstance collection by serviceId
      * @param serviceId service identifier
