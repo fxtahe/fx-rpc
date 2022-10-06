@@ -89,7 +89,9 @@ public class CacheServiceRegistry implements ServiceRegistry ,ServiceListener{
 
     @Override
     public void unregister(ServiceInstance registration) {
-        registry.unregister(registration);
+        if(RegistryState.CONNECTED.equals(registry.getState())) {
+            registry.unregister(registration);
+        }
         List<ServiceInstance> serviceInstances = this.registerInstances.get(registration.getServiceId());
         if (serviceInstances != null && serviceInstances.size() > 0) {
             serviceInstances.remove(registration);
@@ -117,7 +119,9 @@ public class CacheServiceRegistry implements ServiceRegistry ,ServiceListener{
                 this.subscribers.remove(serviceId);
             }
         }else{
-            registry.unsubscribe(serviceId,this);
+            if(RegistryState.CONNECTED.equals(registry.getState())) {
+                registry.unsubscribe(serviceId, this);
+            }
         }
     }
 
