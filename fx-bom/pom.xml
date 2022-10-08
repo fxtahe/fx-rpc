@@ -24,6 +24,7 @@
         <curator.version>4.2.0</curator.version>
         <zookeeper.version>3.4.14</zookeeper.version>
         <caffeine.version>2.9.3</caffeine.version>
+        <javassist.version>3.29.2-GA</javassist.version>
     </properties>
     <dependencyManagement>
         <dependencies>
@@ -117,6 +118,11 @@
                 <groupId>com.github.ben-manes.caffeine</groupId>
                 <artifactId>caffeine</artifactId>
                 <version>${caffeine.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.javassist</groupId>
+                <artifactId>javassist</artifactId>
+                <version>${javassist.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
