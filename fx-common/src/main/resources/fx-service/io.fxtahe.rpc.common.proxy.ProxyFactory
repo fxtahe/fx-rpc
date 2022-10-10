@@ -1,1 +1,2 @@
 io.fxtahe.rpc.common.proxy.JdkProxyFactory
+io.fxtahe.rpc.common.proxy.JavassistProxyFactory

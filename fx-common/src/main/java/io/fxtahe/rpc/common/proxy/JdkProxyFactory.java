@@ -19,7 +19,7 @@ import java.lang.reflect.Proxy;
  * @since 2022/8/19 14:24
  */
 @Extension(alias = "jdk")
-public class JdkProxyFactory implements ProxyFactory {
+public class JdkProxyFactory extends AbstractProxyFactory {
 
 
     @Override
@@ -27,29 +27,5 @@ public class JdkProxyFactory implements ProxyFactory {
         return (T) Proxy.newProxyInstance(ClassUtil.getClassLoader(invoker.getClass()), new Class[]{interfaceClass}, new InvokerInvocationHandler(invoker));
     }
 
-    @Override
-    public <T> Invoker getInvoker(T ref, Class<T> interfaceClass) {
-        return new Invoker() {
-            @Override
-            public Result invoke(Invocation invocation) {
-                AppResult appResult = new AppResult();
-                Object[] arguments = invocation.getArguments();
-                String methodName = invocation.getMethodName();
-                Class<?>[] parameterTypes = invocation.getParameterTypes();
-                try {
-                    Method method = ref.getClass().getMethod(methodName, parameterTypes);
-                    Object invoke = method.invoke(ref, arguments);
-                    appResult.setValue(invoke);
-                } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-                    appResult.setException(e);
-                }
-                return appResult;
-            }
 
-            @Override
-            public String getInterfaceName() {
-                return interfaceClass.getName();
-            }
-        };
-    }
 }

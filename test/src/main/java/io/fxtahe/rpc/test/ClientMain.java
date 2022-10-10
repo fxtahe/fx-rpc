@@ -16,7 +16,7 @@ public class ClientMain {
 
     public static void main(String[] args) throws ExecutionException, InterruptedException {
         RegistryConfig registryConfig = new RegistryConfig();
-        registryConfig.setConnectionString("127.0.0.1:2182");
+        registryConfig.setConnectionString("127.0.0.1:2181");
         registryConfig.setConnectTimeout(60000);
         registryConfig.setReadTimeout(60000);
         ConsumerConfig<HelloService> consumerConfig = new ConsumerConfig<>();
@@ -24,6 +24,7 @@ public class ClientMain {
         consumerConfig.interfaceClass(HelloService.class);
         consumerConfig.setInvokeType(InvokeTypeEnum.ASYNC);
         consumerConfig.setTimeOut(4000);
+        consumerConfig.setReflectType("javassist");
         HelloService refer = consumerConfig.refer();
         String s = refer.sayHello(1);
         CompletableFuture<String> future = RpcContext.getContext().getFuture();
