@@ -10,7 +10,9 @@ import io.fxtahe.rpc.common.registry.ServiceRegistryFactory;
 import io.fxtahe.rpc.common.remoting.ThreadPoolRegister;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ThreadPoolExecutor;
 
@@ -32,6 +34,8 @@ public class ProviderConfig<T> extends AbstractConfig<T, ProviderConfig<T>> {
     private Invoker invoker;
 
     private ExecutorService executor;
+
+    private String version;
 
     /**
      * 发布服务
@@ -56,6 +60,8 @@ public class ProviderConfig<T> extends AbstractConfig<T, ProviderConfig<T>> {
                         serviceInstance.setHost(serverConfig.getHost());
                         serviceInstance.setPort(serverConfig.getPort());
                         serviceInstance.setId(serverConfig.getHost() + ":" + serverConfig.getPort());
+                        serviceInstance.setMetaData(new HashMap<>());
+                        serviceInstance.addMetaData("version",version);
                         serviceRegistry.register(serviceInstance);
                     }
                 }

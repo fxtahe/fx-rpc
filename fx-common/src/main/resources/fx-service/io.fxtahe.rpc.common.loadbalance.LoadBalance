@@ -1,1 +1,4 @@
 io.fxtahe.rpc.common.loadbalance.RandomLoadBalance
+io.fxtahe.rpc.common.loadbalance.RoundLoadBalance
+io.fxtahe.rpc.common.loadbalance.HashLoadBalance
+io.fxtahe.rpc.common.loadbalance.WeightRandomLoadBalance

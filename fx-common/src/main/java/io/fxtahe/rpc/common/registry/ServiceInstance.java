@@ -3,6 +3,7 @@ package io.fxtahe.rpc.common.registry;
 import com.google.common.base.Objects;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -22,7 +23,9 @@ public class ServiceInstance implements Serializable {
 
     private int port;
 
-    private Map<String,String> metaData;
+    private long registrationTime;
+
+    private Map<String,Object> metaData = new HashMap<>(4);
 
     public String getId() {
         return id;
@@ -56,11 +59,27 @@ public class ServiceInstance implements Serializable {
         this.port = port;
     }
 
-    public Map<String, String> getMetaData() {
+    public long getRegistrationTime() {
+        return registrationTime;
+    }
+
+    public void setRegistrationTime(long registrationTime) {
+        this.registrationTime = registrationTime;
+    }
+
+    public Object getMetaData(String key) {
+        return metaData.get(key);
+    }
+
+    public void addMetaData(String key,String value) {
+        this.metaData.put(key,value);
+    }
+
+    public Map<String, Object> getMetaData() {
         return metaData;
     }
 
-    public void setMetaData(Map<String, String> metaData) {
+    public void setMetaData(Map<String, Object> metaData) {
         this.metaData = metaData;
     }
 
