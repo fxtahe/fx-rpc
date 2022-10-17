@@ -73,15 +73,6 @@ public class RpcResponse {
     }
 
 
-    @Override
-    public String toString() {
-        return "RpcResponse{" +
-                "id=" + id +
-                ", status=" + status +
-                ", heartBeat=" + heartBeat +
-                ", data=" + data +
-                ", errorMsg='" + errorMsg + '\'' +
-                ", serializationName='" + serializationName + '\'' +
-                '}';
-    }
+
+
 }

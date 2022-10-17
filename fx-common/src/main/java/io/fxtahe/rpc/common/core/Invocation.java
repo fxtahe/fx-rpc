@@ -3,8 +3,9 @@ package io.fxtahe.rpc.common.core;
 import io.fxtahe.rpc.common.util.ClassUtil;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+
 
 /**
  * @author fxtahe
@@ -36,7 +37,7 @@ public class Invocation implements Serializable {
         this.returnType = returnType;
         this.parameterTypes = parameterTypes == null ? new Class[0] : parameterTypes;
         this.parameterTypesDesc = parameterTypes == null ? "" : ClassUtil.getDesc(parameterTypes);
-        this.attributes = attributes==null?new ConcurrentHashMap<>():attributes;
+        this.attributes = attributes==null?new HashMap<>():attributes;
     }
 
 

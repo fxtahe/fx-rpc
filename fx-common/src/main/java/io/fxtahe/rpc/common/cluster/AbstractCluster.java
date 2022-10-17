@@ -21,6 +21,7 @@ import static io.fxtahe.rpc.common.costants.InvocationConstants.INVOKE_TYPE_KEY;
 import static io.fxtahe.rpc.common.costants.InvocationConstants.RETRIES_NUM_KEY;
 import static io.fxtahe.rpc.common.costants.InvocationConstants.SERIALIZATION_NAME_KEY;
 import static io.fxtahe.rpc.common.costants.InvocationConstants.TIMEOUT_KEY;
+import static io.fxtahe.rpc.common.costants.InvocationConstants.VERSION_KEY;
 
 /**
  * @author fxtahe
@@ -92,11 +93,16 @@ public abstract class AbstractCluster implements Cluster {
 
     @Override
     public Result invoke(Invocation invocation) {
+        setInvocationAttr(invocation);
+        return doInvoke(invocation);
+    }
+
+    private void setInvocationAttr(Invocation invocation){
         invocation.setAttribute(SERIALIZATION_NAME_KEY,consumerConfig.getSerializationName());
         invocation.setAttribute(INVOKE_TYPE_KEY,consumerConfig.getInvokeType().name());
         invocation.setAttribute(RETRIES_NUM_KEY,consumerConfig.getRetries());
         invocation.setAttribute(TIMEOUT_KEY,consumerConfig.getTimeOut());
-        return doInvoke(invocation);
+        invocation.setAttribute(VERSION_KEY,consumerConfig.getVersion());
     }
 
     @Override

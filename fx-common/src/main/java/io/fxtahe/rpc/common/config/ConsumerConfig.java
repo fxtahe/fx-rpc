@@ -67,6 +67,11 @@ public class ConsumerConfig<T> extends AbstractConfig<T, ConsumerConfig<T>>{
     private long timeOut;
 
     /**
+     * service version
+     */
+    private String version;
+
+    /**
      * interface refer
      */
     private T ref;
@@ -201,5 +206,13 @@ public class ConsumerConfig<T> extends AbstractConfig<T, ConsumerConfig<T>>{
 
     public void setTimeOut(long timeOut) {
         this.timeOut = timeOut;
+    }
+
+    public String getVersion() {
+        return version;
+    }
+
+    public void setVersion(String version) {
+        this.version = version;
     }
 }

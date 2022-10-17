@@ -121,7 +121,7 @@ public class JavassistClass {
             }
         }
         sb.append("{").append(code).append("}");
-        if (fields == null) {
+        if (methods == null) {
             methods = new HashSet<>();
         }
         methods.add(sb.toString());
