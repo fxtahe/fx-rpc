@@ -83,6 +83,8 @@ public class DefaultConnectionHandler implements ConnectionHandler {
         }
     }
 
+
+
     public CompletableFuture<Result> dispatchHandle(final Invocation invocation) {
         ExecutorService executorService = ThreadPoolRegister.selectThreadPool(invocation.getInterfaceName());
         return CompletableFuture.supplyAsync(() -> requestProcessHandler.handleRequest(invocation), executorService);

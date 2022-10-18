@@ -1,5 +1,6 @@
 package io.fxtahe.rpc.remoting.netty;
 
+import io.fxtahe.rpc.common.core.AppResult;
 import io.fxtahe.rpc.common.core.Invocation;
 import io.fxtahe.rpc.common.core.RpcRequest;
 import io.fxtahe.rpc.common.core.RpcResponse;
@@ -67,7 +68,9 @@ public class NettyDecoder extends ByteToMessageDecoder {
                     Invocation invocation = getInvocation(id);
                     if(invocation!=null){
                         Object deserialize = serialization.deserialize(bytes, invocation.getReturnType());
-                        rpcResponse.setData(deserialize);
+                        AppResult appResult = new AppResult();
+                        appResult.setValue(deserialize);
+                        rpcResponse.setData(appResult);
                     }
                 }
             }else{

@@ -1,3 +1,4 @@
 io.fxtahe.rpc.common.serialize.HessianSerialization
 io.fxtahe.rpc.common.serialize.JsonSerialization
 io.fxtahe.rpc.common.serialize.JdkSerialization
+io.fxtahe.rpc.common.serialize.ProtobufSerialization

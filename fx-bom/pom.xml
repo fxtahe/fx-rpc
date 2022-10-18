@@ -25,6 +25,7 @@
         <zookeeper.version>3.4.14</zookeeper.version>
         <caffeine.version>2.9.3</caffeine.version>
         <javassist.version>3.29.2-GA</javassist.version>
+        <protostuff.version>1.7.4</protostuff.version>
     </properties>
     <dependencyManagement>
         <dependencies>
@@ -123,6 +124,17 @@
                 <groupId>org.javassist</groupId>
                 <artifactId>javassist</artifactId>
                 <version>${javassist.version}</version>
+            </dependency>
+            <!-- protostuff -->
+            <dependency>
+                <groupId>io.protostuff</groupId>
+                <artifactId>protostuff-core</artifactId>
+                <version>${protostuff.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.protostuff</groupId>
+                <artifactId>protostuff-runtime</artifactId>
+                <version>${protostuff.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

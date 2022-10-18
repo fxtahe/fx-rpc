@@ -1,6 +1,7 @@
 package io.fxtahe.rpc.remoting.netty;
 
 
+import io.fxtahe.rpc.common.core.Result;
 import io.fxtahe.rpc.common.core.RpcRequest;
 import io.fxtahe.rpc.common.core.RpcResponse;
 import io.fxtahe.rpc.common.costants.StatusConstants;
@@ -56,7 +57,8 @@ public class NettyEncoder extends MessageToByteEncoder<Object> {
             out.writeByte(requestByte);
             out.writeByte(status);
             if(StatusConstants.OK == status){
-                writeBody(out, rpcResponse.getData(), serializationEnum,heartBeat);
+                Result result = (Result) rpcResponse.getData();
+                writeBody(out,result.getValue(), serializationEnum,heartBeat);
             }else{
                 writeBody(out, rpcResponse.getErrorMsg(), serializationEnum,heartBeat);
             }
